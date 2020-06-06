@@ -1,0 +1,7 @@
+/.vs/
+/[Ll]ibrary/
+/[Ll]ogs/
+/obj/
+/Temp/
+
+*.sln
