@@ -102,7 +102,7 @@ public class CharacterPlacement : MonoBehaviour {
 		
 		//get the grid center by taking the opposite of the the enemy army position
 		gridCenter = GameObject.FindObjectOfType<EnemyArmy>().gameObject.transform.position;
-		gridCenter = new Vector3(-gridCenter.x, gridCenter.y, gridCenter.z);
+		gridCenter = GridManager.Instance.placeCenter;
 
 		GridManager.Instance.InitilizeGrid(gridCenter, gridSize);
 
@@ -298,6 +298,7 @@ public class CharacterPlacement : MonoBehaviour {
 			//get the position of the mouse relative to the terrain
 			Vector3 position = getPosition();
 			int tileIndex = GridManager.Instance.GetTileWithPos(position);
+			GridManager.Instance.curIndex = tileIndex;
 			if (tileIndex != -1)
 			{
 				Vector2 tilePos = GridManager.Instance.GetTilePos(tileIndex);
@@ -408,7 +409,8 @@ public class CharacterPlacement : MonoBehaviour {
 			//create a new unit/character and prevent it from moving
 			GameObject unit = Instantiate(troops[selected].deployableTroops, position, Quaternion.identity);
 			disableUnit(unit);
-			
+			var unitComp = unit.GetComponent<Unit>();
+			GridManager.Instance.SetCurrentTileUnit(unitComp);
 			//set the correct rotation
 			updateRotation(unit);
 			

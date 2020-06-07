@@ -9,9 +9,54 @@ using UnityEditor;
 [System.Serializable]
 public class EnemyArmyLevel{
 	public int gridSize;
-	public List<GameObject> units;
+	public string groupSize;
+	public List<EnemyUnit> units;
+	public List<EnemyGroup> group;
 	public int playerCoins;
 	public string scene;
+}
+
+[System.Serializable]
+public class EnemyGroup
+{
+	public List<EnemyUnit> units;
+    private int _index;
+    public int Index
+    {
+        get
+        {
+			return _index;
+		}
+		set
+        {
+			_index = value;
+			SetUnitGroupID(value);
+        }
+    }
+
+    private void SetUnitGroupID(int id)
+    {
+		for (int i = 0; i < units.Count; i++)
+			units[i].groupID = id;
+    }
+
+    public EnemyGroup()
+    {
+		units = new List<EnemyUnit>();
+    }
+}
+
+[System.Serializable]
+public class EnemyUnit
+{
+	public GameObject unit;
+	public int groupID;
+}
+
+[System.Serializable]
+public enum PlayMode
+{
+    SINGLE,GROUP
 }
 
 public class LevelData : ScriptableObject {
@@ -25,7 +70,10 @@ public class LevelData : ScriptableObject {
 	
 	//editor variables
 	public bool customImages;
-	
+
+	[Space(10)]
+	public PlayMode playMode;
+
 	[Space(10)]
 	public float spawnDelay;
 	public bool grid;

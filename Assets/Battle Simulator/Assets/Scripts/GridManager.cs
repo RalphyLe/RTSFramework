@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 public class GridManager:MonoBehaviour
 {
+    public GameObject tileObj;
+    public Vector3 placeCenter;
+    public int curIndex = -1;
     [HideInInspector]
     public List<Tile> grids = new List<Tile>();
     [HideInInspector]
@@ -22,7 +25,7 @@ public class GridManager:MonoBehaviour
         if (grids == null)
             grids = new List<Tile>();
         grids.Clear();
-        this.gridCenter = new Vector2(start.x, start.z);
+        this.gridCenter = new Vector2(placeCenter.x, placeCenter.z);
         this.gridSize = gridSize;
 
         for (int i = -gridSize; i < gridSize; i++)
@@ -52,9 +55,21 @@ public class GridManager:MonoBehaviour
         return GetTileWithPos(trans);
     }
 
+    public void SetCurrentTileUnit(Unit unit)
+    {
+        if (curIndex >= 0)
+            grids[curIndex].unit = unit;
+    }
+
     private void OnDrawGizmos()
     {
-
+        if (grids.Count > 0)
+        {
+            for(int i = 0; i < grids.Count; i++)
+            {
+                Gizmos.DrawWireCube(new Vector3(grids[i].rect.center.x, 0, grids[i].rect.center.y), Vector3.one * tileSize);
+            }
+        }
     }
 
     public Vector2 GetTilePos(int id)
@@ -64,6 +79,8 @@ public class GridManager:MonoBehaviour
 
     public bool HasPlaceUnit(int id)
     {
+        if (id < 0)
+            return true;
         return grids[id].unit != null;
     }
 

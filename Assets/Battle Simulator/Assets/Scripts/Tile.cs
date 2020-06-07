@@ -5,6 +5,7 @@ public class Tile
 {
     public Unit unit = null;
     public Rect rect;
+    public GameObject instance;
     public int index;
 
     public Tile(int id,Rect rect)
