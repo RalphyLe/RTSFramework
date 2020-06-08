@@ -6,6 +6,7 @@ public class EnemyArmy : MonoBehaviour {
 	
 	//not visible in the inspector
 	private LevelData levelData;
+	private PlayMode playMode;
 	private List<GameObject> spawnedEnemies = new List<GameObject>();
 	private CharacterPlacement characterPlacement;
 	
@@ -13,7 +14,7 @@ public class EnemyArmy : MonoBehaviour {
 		//find the level data object and get the current level
 		levelData = Resources.Load("Level data") as LevelData;
 		int level = PlayerPrefs.GetInt("level");
-		
+		playMode = levelData.playMode;
 		//also find the character placement script
 		characterPlacement = GameObject.FindObjectOfType<CharacterPlacement>();
 		
@@ -30,22 +31,32 @@ public class EnemyArmy : MonoBehaviour {
 		//find the 3d start position for the grid
 		Vector3 startPosition = new Vector3(transform.position.x + ((float)sizeGrid * ((float)levelGridSize/2f)), 100, transform.position.z + ((float)sizeGrid * ((float)levelGridSize/2f)));
 		int currentPosition = 0;
-		
-		//for each position in the grid
-		for(int x = 0; x < levelGridSize; x++){
-			for(int z = 0; z < levelGridSize; z++){
-				//get the 3d position and the unit for that position
-				Vector3 position = new Vector3(startPosition.x - ((float)x * sizeGrid), startPosition.y, startPosition.z - ((float)z * sizeGrid));
-				GameObject unit = levelData.levels[levelIndex].units[currentPosition].unit;
-				
-				if(unit != null){
-					//if there is a unit/character, spawn it and wait a moment for the spawn effect
-					spawnNew(position, unit);
-					yield return new WaitForSeconds(levelData.spawnDelay);
+
+        if (playMode == PlayMode.GROUP)
+        {
+
+        }
+        else
+        {
+			//for each position in the grid
+			for (int x = 0; x < levelGridSize; x++)
+			{
+				for (int z = 0; z < levelGridSize; z++)
+				{
+					//get the 3d position and the unit for that position
+					Vector3 position = new Vector3(startPosition.x - ((float)x * sizeGrid), startPosition.y, startPosition.z - ((float)z * sizeGrid));
+					GameObject unit = levelData.levels[levelIndex].units[currentPosition].unit;
+
+					if (unit != null)
+					{
+						//if there is a unit/character, spawn it and wait a moment for the spawn effect
+						spawnNew(position, unit);
+						yield return new WaitForSeconds(levelData.spawnDelay);
+					}
+
+					//increase the current position index
+					currentPosition++;
 				}
-				
-				//increase the current position index
-				currentPosition++;
 			}
 		}
 	}

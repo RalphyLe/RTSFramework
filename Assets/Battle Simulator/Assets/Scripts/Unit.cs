@@ -14,6 +14,7 @@ public class Unit : MonoBehaviour {
 	public GameObject ragdoll;
 	public AudioClip attackAudio;
 	public AudioClip runAudio;
+	public int groupId;
 	
 	//not visible in the inspector
 	[HideInInspector]
