@@ -16,7 +16,6 @@ public class EnemyArmyWindow : EditorWindow {
 	private GUISkin skin;
 	private LevelData levelData;
 	private PlayMode playMode;
-	private Vector2 groupSize;
 	
 	void OnEnable(){
 		levelData = Resources.Load("Level data") as LevelData;
@@ -70,41 +69,58 @@ public class EnemyArmyWindow : EditorWindow {
 							if (this.playMode == PlayMode.GROUP)
 							{
 								var tmpGroup = new EnemyGroup();
-								int size = (int)groupSize.x * (int)groupSize.y;
-								int neibor = index;
-                                for(int id = 0; id < size; id++)
+								int size = (int)enemyArmyLevel.groupSize.x * (int)enemyArmyLevel.groupSize.y;
+								int neibor;
+								bool canPlace = true;
+								if (index % enemyArmyLevel.gridSize + (int)enemyArmyLevel.groupSize.x > enemyArmyLevel.gridSize)
+									continue;
+
+								for (int id = 0; id < size; id++)
                                 {
-									neibor = index + (int)Mathf.Ceil(id/groupSize.x)*(int)groupSize.y + id%(int)groupSize.x;
-                                    if(enemyArmyLevel.units[neibor]!=null&&enemyArmyLevel.units[neibor].unit!=null)
+									neibor = index + (int)(id / enemyArmyLevel.groupSize.x) * enemyArmyLevel.gridSize + id % (int)enemyArmyLevel.groupSize.x;
+                                    if(enemyArmyLevel.units[neibor] != null&&enemyArmyLevel.units[neibor].unit!=null)
                                     {
-										Debug.LogError(string.Format("格子:%s非空，布置失败", neibor));
+										canPlace = false;
+										Debug.LogError(string.Format("格子:%d非空，布置失败", neibor));
 										break;
                                     }
                                 }
+
+								if (!canPlace)
+									continue;
+
                                 for(int id = 0; id < size; id++)
                                 {
-									neibor = index + (int)Mathf.Floor(id / groupSize.x) * (int)groupSize.y + id % (int)groupSize.x;
-									if (enemyArmyLevel.units[neibor] == null)
-										enemyArmyLevel.units[neibor] = new EnemyUnit();
-								    enemyArmyLevel.units[neibor].unit = (GameObject)enemies[selectedEnemy] as GameObject;
+									neibor = index + (int)(id / enemyArmyLevel.groupSize.x) * enemyArmyLevel.gridSize + id % (int)enemyArmyLevel.groupSize.x;
+									//if (enemyArmyLevel.units[neibor] == null)
+									//	enemyArmyLevel.units[neibor] = new EnemyUnit();
+									enemyArmyLevel.units[neibor].index = neibor;
+									enemyArmyLevel.units[neibor].unit = (GameObject)enemies[selectedEnemy] as GameObject;
 									tmpGroup.units.Add(enemyArmyLevel.units[neibor]);
 
 								}
 								int id_a = -1;
 								for (int id_1 = 0; id_1 < enemyArmyLevel.group.Count; id_1++)
 								{
-									if (enemyArmyLevel.group[id_1] == null)
+									if (enemyArmyLevel.group[id_1].units.Count==0)
+									{
+										Debug.Log("队伍id" + id_1 + "为空");
 										id_a = id_1;
+										break;
+									}
 								}
+
 								if (id_a == -1)
                                 {
 									int num = enemyArmyLevel.group.Count;
+									Debug.Log("添加队伍id:" + num);
 									tmpGroup.Index = num;
 									enemyArmyLevel.group.Add(tmpGroup);
 								}
 								else
 								{
 									tmpGroup.Index = id_a;
+									Debug.Log("添加队伍id:" + id_a);
 									enemyArmyLevel.group[id_a] = tmpGroup;
 								}
 							}
@@ -112,9 +128,9 @@ public class EnemyArmyWindow : EditorWindow {
 							    enemyArmyLevel.units[index].unit = (GameObject)enemies[selectedEnemy] as GameObject;
 					    }
 					    else{
-						    enemyArmyLevel.units[index] = null;
-					    }
-					 }
+							enemyArmyLevel.units[index] = null;
+						}
+					}
                         
 				}
 				else{
@@ -129,10 +145,36 @@ public class EnemyArmyWindow : EditorWindow {
 					
 					if(GUILayout.Button(preview, skin.GetStyle("image"), GUILayout.Width((position.width - (5 * (enemyArmyLevel.gridSize + 1)))/enemyArmyLevel.gridSize), GUILayout.Height((position.height - 170 - (3 * (enemyArmyLevel.gridSize - 1)))/(float)enemyArmyLevel.gridSize))){
 						if(selectedEnemy != -1){
-							enemyArmyLevel.units[index].unit = (GameObject)enemies[selectedEnemy] as GameObject;
+							if (this.playMode == PlayMode.GROUP)
+							{
+								int groupId = enemyArmyLevel.units[index].groupID;
+								var tmpGroup = enemyArmyLevel.group[groupId];
+
+								for(int id = 0; id < tmpGroup.units.Count; id++)
+                                {
+									EnemyUnit unit = tmpGroup.units[id];
+									unit.unit = (GameObject)enemies[selectedEnemy] as GameObject;
+								}
+							}
+							else
+								enemyArmyLevel.units[index].unit = (GameObject)enemies[selectedEnemy] as GameObject;
 						}
 						else{
-							enemyArmyLevel.units[index].unit = null;
+							EnemyUnit unit = enemyArmyLevel.units[index];
+							int groupId = unit.groupID;
+							if (this.playMode == PlayMode.GROUP)
+							{
+								EnemyGroup group = enemyArmyLevel.group[groupId];
+								for (int id = 0; id < group.units.Count; id++)
+								{
+									int id_a = enemyArmyLevel.group[groupId].units[id].index;
+									enemyArmyLevel.units[id_a] = null;
+								}
+								enemyArmyLevel.group[groupId] = null;
+								Debug.Log("删除队伍ID:" + groupId);
+							}
+							else
+								enemyArmyLevel.units[index] = null;
 						}
 					}
 				}
@@ -154,11 +196,9 @@ public class EnemyArmyWindow : EditorWindow {
         {
 			GUILayout.BeginHorizontal("Box");
 			GUILayout.Label("Group Size:");
-			enemyArmyLevel.groupSize = EditorGUILayout.TextField(enemyArmyLevel.groupSize);
-			string[] str = enemyArmyLevel.groupSize.Split('x');
-            if(str.Length>=2)
-			    groupSize = new Vector2(int.Parse(str[0]), int.Parse(str[1]));
-		    GUILayout.EndHorizontal();
+			enemyArmyLevel.groupSize.x = EditorGUILayout.FloatField(enemyArmyLevel.groupSize.x);
+			enemyArmyLevel.groupSize.y = EditorGUILayout.FloatField(enemyArmyLevel.groupSize.y);
+			GUILayout.EndHorizontal();
 		}
 		GUILayout.Space(2);
 		GUILayout.Label("Player coins:");

@@ -9,7 +9,7 @@ using UnityEditor;
 [System.Serializable]
 public class EnemyArmyLevel{
 	public int gridSize;
-	public string groupSize;
+	public Vector2 groupSize;
 	public List<EnemyUnit> units;
 	public List<EnemyGroup> group;
 	public int playerCoins;
@@ -49,6 +49,7 @@ public class EnemyGroup
 [System.Serializable]
 public class EnemyUnit
 {
+	public int index;
 	public GameObject unit;
 	public int groupID;
 }
