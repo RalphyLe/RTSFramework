@@ -10,6 +10,7 @@ public class UnitGroupManager : MonoBehaviour
     void Start()
     {
         Instance = this;
+        groups = new List<UnitGroup>();
     }
 
     public void CreateNewGroup(string tag)

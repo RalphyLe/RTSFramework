@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class EnemyArmy : MonoBehaviour {
 	
@@ -17,13 +18,14 @@ public class EnemyArmy : MonoBehaviour {
 		playMode = levelData.playMode;
 		//also find the character placement script
 		characterPlacement = GameObject.FindObjectOfType<CharacterPlacement>();
-		
+		UnitGroupManager.Instance.ClearGroups();
 		//spawn enemies if this level exists
 		if(level < levelData.levels.Count)
 			StartCoroutine(spawnEnemies(level));
 	}
 	
 	IEnumerator spawnEnemies(int levelIndex){
+		
 		//get the gridsize and the space in between grid cells
 		int levelGridSize = levelData.levels[levelIndex].gridSize;
 		int sizeGrid = 2;
@@ -34,7 +36,25 @@ public class EnemyArmy : MonoBehaviour {
 
         if (playMode == PlayMode.GROUP)
         {
-
+			List<EnemyGroup> enemyGroups = levelData.levels[levelIndex].group;
+			for(int i = 0; i < enemyGroups.Count; i++)
+            {
+				UnitGroup unitGroup = new UnitGroup("enemy");
+				var per_group = enemyGroups[i];
+				for(int delta = 0; delta < per_group.units.Count; delta++)
+                {
+					EnemyUnit enemyUnit = per_group.units[delta];
+					int offset_x = enemyUnit.index / levelGridSize;
+					int offset_z = enemyUnit.index % levelGridSize;
+					Vector3 position = new Vector3(startPosition.x - offset_x * sizeGrid, startPosition.y, startPosition.z - offset_z * sizeGrid);
+					GameObject unit = enemyUnit.unit;
+                    if (unit != null)
+                    {
+						unitGroup.AddUnit(spawnNew(position, unit));
+						yield return new WaitForSeconds(levelData.spawnDelay);
+					}
+                }
+            }
         }
         else
         {
@@ -67,7 +87,7 @@ public class EnemyArmy : MonoBehaviour {
 	}
 
 	//spawn a new enemy
-	public void spawnNew(Vector3 position, GameObject unit){
+	public Unit spawnNew(Vector3 position, GameObject unit){
 		//store the raycast hit
 		RaycastHit hit;
 		
@@ -75,12 +95,14 @@ public class EnemyArmy : MonoBehaviour {
 			//if the raycast hits a terrain, spawn a unit at the hit point
 			GameObject newUnit = Instantiate(unit, hit.point, Quaternion.Euler(0, 90, 0));
 			spawnedEnemies.Add(newUnit);
-			
 			//disable the unit until the battle starts
 			characterPlacement.disableUnit(newUnit);
+			return newUnit.GetComponent<Unit>();
 		}
+		return null;
 	}
 	
+
 	public void startEnemies(){
 		//enable all enemies so they start the battle
 		foreach(GameObject enemyUnit in spawnedEnemies){

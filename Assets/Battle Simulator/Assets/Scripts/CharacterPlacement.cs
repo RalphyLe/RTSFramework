@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using UnityEngine.SocialPlatforms;
+using System.Net.Http.Headers;
+using System;
 
 //troop class so we can build different troops/characters
 [System.Serializable]
@@ -83,12 +85,12 @@ public class CharacterPlacement : MonoBehaviour {
 	
 	private bool mobile;
 	private int gridSize;
+	private int tileSize = 2;
 	
 	void Awake(){
 		//get the level data object and check if we're using mobile controls
 		levelData = Resources.Load("Level data") as LevelData;
 		mobile = (GameObject.FindObjectOfType<CamJoystick>() != null);
-		
 		if(mobile){
 			//if the game has mobile controls, enable the grid, update the button text and don't show the erase button since it doesn't work with the 2D grid
 			levelData.grid = true;
@@ -98,8 +100,9 @@ public class CharacterPlacement : MonoBehaviour {
 		}
 		
 		//double the grid size so it's always even
-		gridSize = levelData.gridSize * 2;
-		
+		gridSize = levelData.gridSize * tileSize;
+		if (levelData.playMode == PlayMode.SINGLE)
+			levelData.groupSize = Vector2.one;
 		//get the grid center by taking the opposite of the the enemy army position
 		gridCenter = GameObject.FindObjectOfType<EnemyArmy>().gameObject.transform.position;
 		gridCenter = GridManager.Instance.placeCenter;
@@ -174,11 +177,11 @@ public class CharacterPlacement : MonoBehaviour {
 				}
 				
 				//change the current border position on the x axis
-				current = new Vector3(current.x + 2, current.y, current.z);
+				current = new Vector3(current.x + tileSize, current.y, current.z);
 			}
 			
 			//change the z axis for the current border position
-			current = new Vector3(borderStart.x, current.y, current.z + 2);
+			current = new Vector3(borderStart.x, current.y, current.z + tileSize);
 		}
 	}
 	
@@ -297,14 +300,23 @@ public class CharacterPlacement : MonoBehaviour {
 		if(currentDemoCharacter){
 			//get the position of the mouse relative to the terrain
 			Vector3 position = getPosition();
-			int tileIndex = GridManager.Instance.GetTileWithPos(position);
-			GridManager.Instance.curIndex = tileIndex;
-			if (tileIndex != -1)
-			{
-				Vector2 tilePos = GridManager.Instance.GetTilePos(tileIndex);
-				position.x = tilePos.x;
-				position.z = tilePos.y;
+			Vector3 offset = position - currentDemoCharacter.transform.position;
+			int tileIndex = -1;
+			for (int childId = 0; childId < currentDemoCharacter.transform.childCount; childId++)
+            {
+				Vector3 demoPos = currentDemoCharacter.transform.GetChild(childId).position;
+				Vector3 demo_offset = demoPos + offset;
+				tileIndex = GridManager.Instance.GetTileWithPos(demo_offset);
+				if (tileIndex != -1)
+				{
+					GridManager.Instance.curIndex = tileIndex;
+					Vector2 tilePos = GridManager.Instance.GetTilePos(tileIndex);
+					position.x = tilePos.x - demoPos.x + currentDemoCharacter.transform.position.x;
+					position.z = tilePos.y - demoPos.z + currentDemoCharacter.transform.position.z;
+					break;
+				}
 			}
+
 			//move the demo with the mouse 
 			currentDemoCharacter.transform.position = position;
 			
@@ -318,20 +330,36 @@ public class CharacterPlacement : MonoBehaviour {
 
 				//place a unit when the left mouse button is down
 				if (Input.GetMouseButton(0) && position.x > 0)
-					placeUnitInTile(tileIndex,position, false);//placeUnit(position, false);
+                {
+                    if (groupCanPlace())
+                    {
+						for(int placeId = 0; placeId < currentDemoCharacter.transform.childCount; placeId++)
+                        {
+							Transform demo = currentDemoCharacter.transform.GetChild(placeId);
+							int demoTileId = GridManager.Instance.GetTileWithPos(demo.position);
+							placeUnitInTile(demoTileId, demo.position, false);
+                        }
+                    }
+                }
+					//placeUnitInTile(tileIndex,position, false);//placeUnit(position, false);
 				
 				//get a color for the demo character and change it based on the validity of the current mouse position
 				Color color = Color.white;
-				if(tileHasPlaceUnit(tileIndex) || position.x < 0 || troops[selected].troopCosts > coins || Vector3.Distance(Camera.main.transform.position, position) > levelData.placeRange || !withinGrid(position)){
+				if(!groupCanPlace() || position.x < 0 || troops[selected].troopCosts * levelData.groupSize.x * levelData.groupSize.y > coins || 
+					Vector3.Distance(Camera.main.transform.position, position) > levelData.placeRange || 
+					!withinGrid(position)){
 					color = levelData.invalidPosition;
 				}
 				else{
 					color = levelData.tileColor;
 				}
-				
-				//change the indicator color
-				foreach(Renderer renderer in currentDemoCharacter.transform.Find("Indicator(Clone)").GetComponentsInChildren<Renderer>()){
-					renderer.material.color = color;
+				for(int i = 0; i < currentDemoCharacter.transform.childCount; i++)
+                {
+					//change the indicator color
+					foreach (Renderer renderer in currentDemoCharacter.transform.GetChild(i).Find("Indicator(Clone)").GetComponentsInChildren<Renderer>())
+					{
+						renderer.material.color = color;
+					}
 				}
 			}
 			else if(Input.GetMouseButton(0) || erasingUsingKey){
@@ -366,6 +394,19 @@ public class CharacterPlacement : MonoBehaviour {
 		return GridManager.Instance.HasPlaceUnit(index);
 	}
 
+	bool groupCanPlace()
+    {
+		if (currentDemoCharacter == null)
+			return false;
+		for(int i = 0; i < currentDemoCharacter.transform.childCount; i++)
+        {
+			var demoPos = currentDemoCharacter.transform.GetChild(i).position;
+			if (!canPlace(demoPos, false))
+				return false;
+        }
+		return true;
+    }
+
 	void placeUnitInTile(int index,Vector3 pos,bool flag)
 	{
 		if (GridManager.Instance.HasPlaceUnit(index) || index == -1)
@@ -389,10 +430,10 @@ public class CharacterPlacement : MonoBehaviour {
 		if(erasing){
 			//if we're erasing, don't display a character
 			if(currentDemoCharacter)
-				Destroy(currentDemoCharacter); 
-			
+				Destroy(currentDemoCharacter);
+			currentDemoCharacter = new GameObject();
 			//instead of the character, just show the red tile
-			currentDemoCharacter = newTile(levelData.removeColor);
+			newTile(levelData.removeColor).transform.parent = currentDemoCharacter.transform;
 			eraseButton.color = levelData.eraseButtonColor;
 		}
 		else{
@@ -529,7 +570,7 @@ public class CharacterPlacement : MonoBehaviour {
 		
 		//foreach unit, check if it's in range and return as soon as one of them is
 		foreach(Unit unit in allUnits){
-			if(Vector3.Distance(unit.gameObject.transform.position, position) < levelData.checkRange && unit.gameObject != currentDemoCharacter)
+			if(Vector3.Distance(unit.gameObject.transform.position, position) < levelData.checkRange && !unitIsDemoCharacter(unit.gameObject))
 				return unit.gameObject;
 		}
 		
@@ -537,6 +578,17 @@ public class CharacterPlacement : MonoBehaviour {
 		return null;
 	}
 	
+	public bool unitIsDemoCharacter(GameObject unit)
+    {
+		int childCount = currentDemoCharacter.transform.childCount;
+		for(int i = 0; i < childCount; i++)
+        {
+			if (unit == currentDemoCharacter.transform.GetChild(i).gameObject)
+				return true;
+        }
+		return false;
+    }
+
 	//hide or show the panel on the left
 	public void showHideLeftPanel(){
 		leftPanelAnimator.SetBool("hide panel", !leftPanelAnimator.GetBool("hide panel"));
@@ -618,28 +670,45 @@ public class CharacterPlacement : MonoBehaviour {
 			Destroy(currentDemoCharacter);
 		Debug.Log("ChangeDemo!");
 		//create a new demo and name and tag it
-		currentDemoCharacter = Instantiate(troops[selected].deployableTroops);
-		currentDemoCharacter.name = "demo";
-		currentDemoCharacter.tag = "Untagged";
-		
-		//disable the new demo so it doesn't move around using the navmesh
-		disableUnit(currentDemoCharacter);
-		
-		//change the demo colors
-		foreach(Renderer renderer in currentDemoCharacter.GetComponentsInChildren<Renderer>()){
-			foreach(Material material in renderer.materials){
-				material.shader = Shader.Find("Unlit/UnlitAlphaWithFade");
-				float colorStrength = (material.color.r + material.color.g + material.color.b)/3f;
-				material.color = new Color(material.color.r, material.color.g, material.color.b, levelData.demoCharacterAlpha * colorStrength);
+		//currentDemoCharacter = Instantiate(troops[selected].deployableTroops);
+		//currentDemoCharacter.name = "demo";
+		//currentDemoCharacter.tag = "Untagged";
+		currentDemoCharacter = new GameObject("demo");
+		currentDemoCharacter.transform.eulerAngles = Vector3.zero;
+		int size = 1;
+		if (levelData.playMode == PlayMode.GROUP)
+			size = (int)(levelData.groupSize.x * levelData.groupSize.y);
+		Vector3 offset = new Vector3((levelData.groupSize.y - 1) * tileSize / 2, 0, (levelData.groupSize.x - 1) / 2 * tileSize) * (-1);
+		for(int i = 0; i < size; i++)
+        {
+			GameObject demo = Instantiate(troops[selected].deployableTroops,currentDemoCharacter.transform);
+			demo.name = "demo" + i;
+			demo.tag = "Untagged";
+			int offset_x = (int)(i / levelData.groupSize.x);
+			int offset_y = (int)(i % levelData.groupSize.x);
+			Vector3 releventPos = new Vector3(offset_x * tileSize, 0, offset_y * tileSize);
+			demo.transform.localPosition = offset + releventPos;
+			//disable the new demo so it doesn't move around using the navmesh
+			disableUnit(demo);
+			//change the demo colors
+			foreach (Renderer renderer in demo.GetComponentsInChildren<Renderer>())
+			{
+				foreach (Material material in renderer.materials)
+				{
+					material.shader = Shader.Find("Unlit/UnlitAlphaWithFade");
+					float colorStrength = (material.color.r + material.color.g + material.color.b) / 3f;
+					material.color = new Color(material.color.r, material.color.g, material.color.b, levelData.demoCharacterAlpha * colorStrength);
+				}
 			}
+
+			//create the demo tile and parent it to the demo character
+			GameObject tile = newTile(levelData.tileColor);
+			tile.transform.SetParent(demo.transform, false);
+
+			//update the demo rotation
+			updateRotation(demo);
 		}
-		
-		//create the demo tile and parent it to the demo character
-		GameObject tile = newTile(levelData.tileColor);
-		tile.transform.SetParent(currentDemoCharacter.transform, false);
-		
-		//update the demo rotation
-		updateRotation(currentDemoCharacter);
+		Debug.Log("Change Demo");
 	}
 	
 	//change all the unit stats in the character panel
@@ -706,12 +775,12 @@ public class CharacterPlacement : MonoBehaviour {
 			}
 		}
 		else if(currentDemoCharacter.activeSelf){
-			//don't show the character if it didn't find a position on the terrain
-			currentDemoCharacter.SetActive(false);
-		}
-		
-		//if there's no position, return vector3.zero
-		return Vector3.zero;
+            //don't show the character if it didn't find a position on the terrain
+            currentDemoCharacter.SetActive(false);
+        }
+
+        //if there's no position, return vector3.zero
+        return Vector3.zero;
 	}
 	
 	public void disableUnit(GameObject unit){
@@ -762,7 +831,7 @@ public class CharacterPlacement : MonoBehaviour {
 		foreach(ParticleSystem particles in unit.GetComponentsInChildren<ParticleSystem>()){
 			particles.gameObject.SetActive(true);
 		}
-		
+		Debug.Log("Enable Unit!");
 		//start the animators
 		foreach(Animator animator in unit.GetComponentsInChildren<Animator>()){
 			animator.SetBool("Start", true);

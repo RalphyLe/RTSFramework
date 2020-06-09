@@ -9,4 +9,14 @@ public class UnitGroup
         units = new List<Unit>();
         this.tag = tag;
     }
+
+    public void AddUnit(Unit unit)
+    {
+        units.Add(unit);
+    }
+
+    public void RemoveUnit(Unit unit)
+    {
+        units.Remove(unit);
+    }
 }

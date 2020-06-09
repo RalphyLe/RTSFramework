@@ -74,6 +74,7 @@ public class LevelData : ScriptableObject {
 
 	[Space(10)]
 	public PlayMode playMode;
+	public Vector2 groupSize;
 
 	[Space(10)]
 	public float spawnDelay;
