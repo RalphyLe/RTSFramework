@@ -1,2 +1,2 @@
 # RTSFramework
-A simple rts demo
+A simple rts toolkit
