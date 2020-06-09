@@ -757,10 +757,16 @@ public class CharacterPlacement : MonoBehaviour {
 		if(Physics.Raycast(ray, out hit) && hit.collider != null && !EventSystem.current.IsPointerOverGameObject() && hit.collider.gameObject.tag == "Battle ground"){
 			//enable the demo character if there's a valid position
 			if(!currentDemoCharacter.activeSelf)
+            {
 				currentDemoCharacter.SetActive(true);
-			
+				for(int i = 0; i < currentDemoCharacter.transform.childCount; i++)
+                {
+					disableUnit(currentDemoCharacter.transform.GetChild(i).gameObject);
+					updateRotation(currentDemoCharacter.transform.GetChild(i).gameObject);
+                }
+			}
 			//normally, return the hit point
-			if(!Input.GetKey(levelData.snappingKey) && !levelData.grid){
+			if (!Input.GetKey(levelData.snappingKey) && !levelData.grid){
 				return hit.point;
 			}
 			else{
