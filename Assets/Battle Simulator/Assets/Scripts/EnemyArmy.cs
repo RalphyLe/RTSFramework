@@ -39,7 +39,7 @@ public class EnemyArmy : MonoBehaviour {
 			List<EnemyGroup> enemyGroups = levelData.levels[levelIndex].group;
 			for(int i = 0; i < enemyGroups.Count; i++)
             {
-				UnitGroup unitGroup = new UnitGroup("enemy");
+				UnitGroup unitGroup = UnitGroupManager.Instance.GetValidGroup("enemy");
 				var per_group = enemyGroups[i];
 				for(int delta = 0; delta < per_group.units.Count; delta++)
                 {

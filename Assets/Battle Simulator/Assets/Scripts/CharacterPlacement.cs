@@ -70,6 +70,7 @@ public class CharacterPlacement : MonoBehaviour {
 	//not visible in the inspector
 	private int selected;
 	private GameObject currentDemoCharacter;
+	private UnitGroup currentGroup;
 	private int rotation = -90;
 	private List<GameObject> placedUnits = new List<GameObject>();
 	
@@ -335,6 +336,8 @@ public class CharacterPlacement : MonoBehaviour {
                 {
                     if (groupCanPlace())
                     {
+						if(levelData.playMode==PlayMode.GROUP)
+							currentGroup = UnitGroupManager.Instance.GetValidGroup("player");
 						for(int placeId = 0; placeId < currentDemoCharacter.transform.childCount; placeId++)
                         {
 							Transform demo = currentDemoCharacter.transform.GetChild(placeId);
@@ -366,7 +369,13 @@ public class CharacterPlacement : MonoBehaviour {
 			}
 			else if(Input.GetMouseButton(0) || erasingUsingKey){
 				//if we're erasing, check for left mouse button to erase units/characters
-				eraseUnitInTile(tileIndex, position, false, false);
+				if (levelData.playMode == PlayMode.GROUP)
+                {
+					Unit unit = GridManager.Instance.grids[tileIndex].unit;
+					eraseGroupUnit(unit.groupId, false, false);
+				}
+				else
+					eraseUnitInTile(tileIndex, position, false, false);
 			}
 			
 			//if the demo character is not playing idle animations, make sure to play idle animations on all of its animators
@@ -404,7 +413,7 @@ public class CharacterPlacement : MonoBehaviour {
         {
 			var demoPos = currentDemoCharacter.transform.GetChild(i).position;
 			int index = GridManager.Instance.GetTileWithPos(demoPos);
-			if (index < 0)
+			if (index < 0 || GridManager.Instance.grids[index].unit != null)
 				return false;
         }
 		return true;
@@ -414,7 +423,8 @@ public class CharacterPlacement : MonoBehaviour {
 	{
 		if (GridManager.Instance.HasPlaceUnit(index) || index == -1)
 			return;
-		placeUnit(pos, flag);
+		else
+			placeUnit(pos, flag);
 	}
 
 	//calculate the battle status by comparing the number of enemies vs the number of allies
@@ -460,7 +470,10 @@ public class CharacterPlacement : MonoBehaviour {
 			
 			//add it to the list of placed units
 			placedUnits.Add(unit);
-			
+			int tileId = GridManager.Instance.GetTileWithPos(position);
+			GridManager.Instance.grids[tileId].unit = unit.GetComponent<Unit>();
+			if (levelData.playMode == PlayMode.GROUP)
+				currentGroup.AddUnit(unit.GetComponent<Unit>());
 			//decrease the number of coins left
 			coins -= troops[selected].troopCosts;
 			coinsText.text = coins + "";
@@ -473,7 +486,7 @@ public class CharacterPlacement : MonoBehaviour {
 			}
 		}
 	}
-	
+
 	//check if the character can be placed at this position
 	bool canPlace(Vector3 position, bool placingGridCell){
 		//check if there's units too close to the current position
@@ -530,6 +543,14 @@ public class CharacterPlacement : MonoBehaviour {
 			GridManager.Instance.grids[index].unit = null;
 			eraseUnit(position, clearing, erasingGridCell);
 		}
+	}
+
+	void eraseGroupUnit(int groupId,bool clearing,bool erasingGridCell)
+    {
+		UnitGroup group = UnitGroupManager.Instance.groups[groupId];
+		for (int i = 0; i < group.units.Count; i++)
+			eraseUnit(group.units[i].transform.position, clearing, erasingGridCell);
+		group.RemoveAllUnit();
 	}
 
 	public void eraseUnit(Vector3 position, bool clearing, bool erasingGridCell){
@@ -793,6 +814,8 @@ public class CharacterPlacement : MonoBehaviour {
 	}
 	
 	public void disableUnit(GameObject unit){
+		if (erasing)
+			return;
 		//disable the navmesh agent component
 		unit.GetComponent<NavMeshAgent>().enabled = false;
 		
