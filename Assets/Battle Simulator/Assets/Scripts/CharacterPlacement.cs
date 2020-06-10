@@ -86,6 +86,7 @@ public class CharacterPlacement : MonoBehaviour {
 	private bool mobile;
 	private int gridSize;
 	private int tileSize = 2;
+	private Rect placeArea;
 	
 	void Awake(){
 		//get the level data object and check if we're using mobile controls
@@ -104,8 +105,9 @@ public class CharacterPlacement : MonoBehaviour {
 		if (levelData.playMode == PlayMode.SINGLE)
 			levelData.groupSize = Vector2.one;
 		//get the grid center by taking the opposite of the the enemy army position
-		gridCenter = GameObject.FindObjectOfType<EnemyArmy>().gameObject.transform.position;
+		//gridCenter = GameObject.FindObjectOfType<EnemyArmy>().gameObject.transform.position;
 		gridCenter = GridManager.Instance.placeCenter;
+		placeArea = new Rect(new Vector2(0, 0 - gridSize * 2), Vector2.one * gridSize);
 
 		GridManager.Instance.InitilizeGrid(gridCenter, gridSize);
 
@@ -381,9 +383,9 @@ public class CharacterPlacement : MonoBehaviour {
 		//if we're not using any grid, it's inside the grid by default
 		if(!levelData.grid)
 			return true;
-		
+
 		//else, compare the position to the grid
-		if(position.x > gridCenter.x + gridSize || position.x < gridCenter.x - gridSize || position.z < gridCenter.z - gridSize || position.z > gridCenter.z + gridSize)
+		if (!placeArea.Contains(new Vector2(position.x, position.z)))
 			return false;
 		
 		return true;
@@ -401,7 +403,8 @@ public class CharacterPlacement : MonoBehaviour {
 		for(int i = 0; i < currentDemoCharacter.transform.childCount; i++)
         {
 			var demoPos = currentDemoCharacter.transform.GetChild(i).position;
-			if (!canPlace(demoPos, false))
+			int index = GridManager.Instance.GetTileWithPos(demoPos);
+			if (index < 0)
 				return false;
         }
 		return true;
@@ -989,4 +992,9 @@ public class CharacterPlacement : MonoBehaviour {
 		//show the game panel
 		gamePanel.SetBool("show", true);
 	}
+
+    private void OnDrawGizmos()
+    {
+		Gizmos.DrawWireCube(gridCenter+Vector3.up, Vector3.one * gridSize*4);
+    }
 }

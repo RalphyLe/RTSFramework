@@ -6767,7 +6767,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileObj: {fileID: 5459989624741732860, guid: c8d663981ac7b5843bd61f322796b9dd, type: 3}
-  placeCenter: {x: 38, y: 0, z: 0}
+  placeCenter: {x: 40, y: 0, z: 0}
   curIndex: -1
 --- !u!1 &555930894
 GameObject:

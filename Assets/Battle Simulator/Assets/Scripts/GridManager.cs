@@ -28,11 +28,11 @@ public class GridManager:MonoBehaviour
         this.gridCenter = new Vector2(placeCenter.x, placeCenter.z);
         this.gridSize = gridSize;
 
-        for (int i = -gridSize; i < gridSize; i++)
+        for (int i = 0; i < gridSize; i++)
         {
-            for(int j = -gridSize; j < gridSize; j++)
+            for(int j = 0; j < gridSize; j++)
             {
-                Vector2 pos = new Vector2(this.gridCenter.x - i * tileSize, this.gridCenter.y - j * tileSize);
+                Vector2 pos = new Vector2(i * tileSize, j * tileSize - gridSize);
                 grids.Add(new Tile(gridSize * i + j, new Rect(pos, Vector2.one * tileSize)));
             }
         }
@@ -88,6 +88,4 @@ public class GridManager:MonoBehaviour
     {
         
     }
-
-
 }
