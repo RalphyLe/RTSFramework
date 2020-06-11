@@ -330,14 +330,14 @@ public class CharacterPlacement : MonoBehaviour {
 							currentGroup = UnitGroupManager.Instance.GetValidGroup("player");
 						for(int placeId = 0; placeId < currentDemoCharacter.transform.childCount; placeId++)
                         {
+							Transform demo = currentDemoCharacter.transform.GetChild(placeId);
 							if (levelData.grid)
 							{
-								Transform demo = currentDemoCharacter.transform.GetChild(placeId);
 								int demoTileId = GridManager.Instance.GetTileWithPos(demo.position);
 								placeUnitInTile(demoTileId, demo.position, false);
 							}
 							else
-								placeUnit(position, false);
+								placeUnit(demo.position, false);
                         }
                     }
                 }
