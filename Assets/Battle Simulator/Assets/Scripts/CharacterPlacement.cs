@@ -84,7 +84,6 @@ public class CharacterPlacement : MonoBehaviour {
 	private Vector3 gridCenter;
 	private GameObject border;
 	
-	private bool mobile;
 	private int gridSize;
 	private int tileSize = 2;
 	private Rect placeArea;
@@ -92,14 +91,6 @@ public class CharacterPlacement : MonoBehaviour {
 	void Awake(){
 		//get the level data object and check if we're using mobile controls
 		levelData = Resources.Load("Level data") as LevelData;
-		mobile = (GameObject.FindObjectOfType<CamJoystick>() != null);
-		if(mobile){
-			//if the game has mobile controls, enable the grid, update the button text and don't show the erase button since it doesn't work with the 2D grid
-			levelData.grid = true;
-			gridButtonText.text = "3D view";
-			grid.SetBool("show", true);
-			eraseButton.gameObject.SetActive(false);
-		}
 		
 		//double the grid size so it's always even
 		gridSize = levelData.gridSize * tileSize;
@@ -110,10 +101,10 @@ public class CharacterPlacement : MonoBehaviour {
 		gridCenter = GridManager.Instance.placeCenter;
 		placeArea = new Rect(new Vector2(0, 0 - gridSize * 2), Vector2.one * gridSize);
 
-		GridManager.Instance.InitilizeGrid(gridCenter, gridSize);
 
 		//if we're using the grid, create a 3D border and a 2D grid
 		if(levelData.grid){
+			GridManager.Instance.InitilizeGrid(gridCenter, gridSize);
 			createBorder();
 			initializeGrid();
 		}
@@ -133,7 +124,7 @@ public class CharacterPlacement : MonoBehaviour {
 	//create the 3d border for grid mode
 	void createBorder(){
 		//get the border start position
-		Vector3 borderStart = gridCenter + new Vector3(-gridSize, 100, -gridSize);
+		Vector3 borderStart = new Vector3(0, 100, -gridSize);
 		//store the current border position (to use during the loop)
 		Vector3 current = borderStart;
 		
@@ -280,9 +271,6 @@ public class CharacterPlacement : MonoBehaviour {
 			battleIndicator.fillAmount += Time.deltaTime * 0.5f;
 		}
 		
-		//don't update the preview character on mobile devices since it uses the 2d grid
-		if(mobile)
-			return;
 		
 		//remove the demo character when hiding the left character panel
 		if(leftPanelAnimator.gameObject.activeSelf && leftPanelAnimator.GetBool("hide panel")){
@@ -303,23 +291,25 @@ public class CharacterPlacement : MonoBehaviour {
 		if(currentDemoCharacter){
 			//get the position of the mouse relative to the terrain
 			Vector3 position = getPosition();
-			Vector3 offset = position - currentDemoCharacter.transform.position;
 			int tileIndex = -1;
-			for (int childId = 0; childId < currentDemoCharacter.transform.childCount; childId++)
+			if (levelData.grid)
             {
-				Vector3 demoPos = currentDemoCharacter.transform.GetChild(childId).position;
-				Vector3 demo_offset = demoPos + offset;
-				tileIndex = GridManager.Instance.GetTileWithPos(demo_offset);
-				if (tileIndex != -1)
+				Vector3 offset = position - currentDemoCharacter.transform.position;
+				for (int childId = 0; childId < currentDemoCharacter.transform.childCount; childId++)
 				{
-					GridManager.Instance.curIndex = tileIndex;
-					Vector2 tilePos = GridManager.Instance.GetTilePos(tileIndex);
-					position.x = tilePos.x - demoPos.x + currentDemoCharacter.transform.position.x;
-					position.z = tilePos.y - demoPos.z + currentDemoCharacter.transform.position.z;
-					break;
+					Vector3 demoPos = currentDemoCharacter.transform.GetChild(childId).position;
+					Vector3 demo_offset = demoPos + offset;
+					tileIndex = GridManager.Instance.GetTileWithPos(demo_offset);
+					if (tileIndex != -1)
+					{
+						GridManager.Instance.curIndex = tileIndex;
+						Vector2 tilePos = GridManager.Instance.GetTilePos(tileIndex);
+						position.x = tilePos.x - demoPos.x + currentDemoCharacter.transform.position.x;
+						position.z = tilePos.y - demoPos.z + currentDemoCharacter.transform.position.z;
+						break;
+					}
 				}
 			}
-
 			//move the demo with the mouse 
 			currentDemoCharacter.transform.position = position;
 			
@@ -340,9 +330,14 @@ public class CharacterPlacement : MonoBehaviour {
 							currentGroup = UnitGroupManager.Instance.GetValidGroup("player");
 						for(int placeId = 0; placeId < currentDemoCharacter.transform.childCount; placeId++)
                         {
-							Transform demo = currentDemoCharacter.transform.GetChild(placeId);
-							int demoTileId = GridManager.Instance.GetTileWithPos(demo.position);
-							placeUnitInTile(demoTileId, demo.position, false);
+							if (levelData.grid)
+							{
+								Transform demo = currentDemoCharacter.transform.GetChild(placeId);
+								int demoTileId = GridManager.Instance.GetTileWithPos(demo.position);
+								placeUnitInTile(demoTileId, demo.position, false);
+							}
+							else
+								placeUnit(position, false);
                         }
                     }
                 }
@@ -371,11 +366,16 @@ public class CharacterPlacement : MonoBehaviour {
 				//if we're erasing, check for left mouse button to erase units/characters
 				if (levelData.playMode == PlayMode.GROUP)
                 {
-					Unit unit = GridManager.Instance.grids[tileIndex].unit;
+					Unit unit = unitsInRange(position).GetComponent<Unit>();
 					eraseGroupUnit(unit.groupId, false, false);
 				}
 				else
-					eraseUnitInTile(tileIndex, position, false, false);
+                {
+					if (levelData.grid)
+						eraseUnitInTile(tileIndex, position, false, false);
+					else
+						eraseUnit(position, false, false);
+				}
 			}
 			
 			//if the demo character is not playing idle animations, make sure to play idle animations on all of its animators
@@ -394,7 +394,7 @@ public class CharacterPlacement : MonoBehaviour {
 			return true;
 
 		//else, compare the position to the grid
-		if (!placeArea.Contains(new Vector2(position.x, position.z)))
+		if (position.x > gridCenter.x || position.x < gridCenter.x - 2 * gridSize || position.z < gridCenter.z - gridSize || position.z > gridCenter.z + gridSize)
 			return false;
 		
 		return true;
@@ -412,10 +412,10 @@ public class CharacterPlacement : MonoBehaviour {
 		for(int i = 0; i < currentDemoCharacter.transform.childCount; i++)
         {
 			var demoPos = currentDemoCharacter.transform.GetChild(i).position;
-			int index = GridManager.Instance.GetTileWithPos(demoPos);
-			if (index < 0 || GridManager.Instance.grids[index].unit != null)
+			if (!canPlace(demoPos, false))
 				return false;
-        }
+
+		}
 		return true;
     }
 
@@ -463,27 +463,22 @@ public class CharacterPlacement : MonoBehaviour {
 			//create a new unit/character and prevent it from moving
 			GameObject unit = Instantiate(troops[selected].deployableTroops, position, Quaternion.identity);
 			disableUnit(unit);
-			var unitComp = unit.GetComponent<Unit>();
-			GridManager.Instance.SetCurrentTileUnit(unitComp);
+            if (levelData.grid)
+            {
+				var unitComp = unit.GetComponent<Unit>();
+				GridManager.Instance.SetCurrentTileUnit(position, unitComp);
+			}
+
 			//set the correct rotation
 			updateRotation(unit);
 			
 			//add it to the list of placed units
 			placedUnits.Add(unit);
-			int tileId = GridManager.Instance.GetTileWithPos(position);
-			GridManager.Instance.grids[tileId].unit = unit.GetComponent<Unit>();
 			if (levelData.playMode == PlayMode.GROUP)
 				currentGroup.AddUnit(unit.GetComponent<Unit>());
 			//decrease the number of coins left
 			coins -= troops[selected].troopCosts;
 			coinsText.text = coins + "";
-			
-			//if we're using the grid system, update the grid by enabling the cell that corresponds with this position
-			if(levelData.grid){
-				GameObject cell = gridPanel.transform.GetChild(positionToGridIndex(position)).GetChild(0).gameObject;
-				cell.SetActive(true);
-				cell.GetComponent<Image>().sprite = troops[selected].buttonImage;
-			}
 		}
 	}
 
@@ -511,10 +506,11 @@ public class CharacterPlacement : MonoBehaviour {
 	
 	//translate a 2d grid index to a 3d position
 	Vector3 gridIndexToPosition(int index){
-		int x = (index % gridSize) * 2;
-		int z = (int)(index/gridSize) * 2;
-		Vector3 position = gridCenter + new Vector3(-(gridSize - 1) + z, 100, -(gridSize - 1) + x);
-		
+		Vector2 tilePos = GridManager.Instance.GetTilePos(index);
+		Vector3 position = new Vector3(tilePos.x, 100, tilePos.y);
+
+		Debug.Log(position);
+
 		RaycastHit hit;
 		if(Physics.Raycast(position, -Vector3.up, out hit))
 			return hit.point;
@@ -528,10 +524,41 @@ public class CharacterPlacement : MonoBehaviour {
 		Vector3 position = gridIndexToPosition(clickedIndex);
 		
 		//if there's a unit already, remove it. Else, add a new one
-		if(cell.transform.GetChild(0).gameObject.activeSelf){
+		if(GridManager.Instance.HasPlaceUnit(clickedIndex)){
+            if (levelData.playMode == PlayMode.GROUP)
+            {
+				Unit unit = GridManager.Instance.grids[clickedIndex].unit;
+				int[] cellIndices = UnitGroupManager.Instance.groups[unit.groupId].GetUnitsTileIndex();
+				for (int cellId = 0; cellId < cellIndices.Length; cellId++)
+				{
+					gridPanel.GetChild(cellIndices[cellId]).GetComponent<Image>().color = Color.white;
+				}
+				eraseGroupUnit(unit.groupId, false, true);
+				return;
+			}
+			cell.GetComponent<Image>().color = Color.white;
 			eraseUnit(position, false, true);
 		}
 		else{
+            if (levelData.playMode == PlayMode.GROUP)
+            {
+				for (int cellId = 0; cellId < levelData.groupSize.x * levelData.groupSize.y; cellId++)
+                {
+					int clickCellId = clickedIndex + (int)(cellId / levelData.groupSize.x) * gridSize + (int)(cellId % levelData.groupSize.x);
+					if (GridManager.Instance.HasPlaceUnit(clickCellId))
+						return;
+                }
+				currentGroup = UnitGroupManager.Instance.GetValidGroup("player");
+				for (int cellId = 0; cellId < levelData.groupSize.x * levelData.groupSize.y; cellId++)
+				{
+					int clickCellId = clickedIndex + (int)(cellId / levelData.groupSize.x) * gridSize + (int)(cellId % levelData.groupSize.x);
+					Vector3 pos = gridIndexToPosition(clickCellId);
+					placeUnitInTile(clickCellId, pos, true);
+					gridPanel.GetChild(clickCellId).GetComponent<Image>().color = Color.red;
+                }
+                return;
+			}
+			cell.GetComponent<Image>().color = Color.red;
 			placeUnit(position, true);
 		}
 	}
@@ -568,12 +595,6 @@ public class CharacterPlacement : MonoBehaviour {
 			//give the player back his coins
 			coins += troops[unitIndex(unit)].troopCosts;
 			coinsText.text = coins + "";
-			
-			//if we're using the grid, clear this cell
-			if(levelData.grid){
-				GameObject cell = gridPanel.transform.GetChild(positionToGridIndex(position)).GetChild(0).gameObject;
-				cell.SetActive(false);
-			}
 		}
 	}
 	
@@ -616,14 +637,8 @@ public class CharacterPlacement : MonoBehaviour {
 	//hide or show the panel on the left
 	public void showHideLeftPanel(){
 		leftPanelAnimator.SetBool("hide panel", !leftPanelAnimator.GetBool("hide panel"));
-		
-		if(!mobile){
-			if(!leftPanelAnimator.GetBool("hide panel"))
-				changeDemo();
-		}
-		else{
-			grid.SetBool("show", !leftPanelAnimator.GetBool("hide panel"));
-		}
+		if (!leftPanelAnimator.GetBool("hide panel"))
+			changeDemo();
 	}
 	
 	IEnumerator addCharacterButtons(){
@@ -661,8 +676,7 @@ public class CharacterPlacement : MonoBehaviour {
 		}
 		
 		//update the demo character
-		if(!mobile)
-			changeDemo();
+		changeDemo();
 	}
 	
 	public void selectTroop(int index){
@@ -679,8 +693,7 @@ public class CharacterPlacement : MonoBehaviour {
 		erasing = false;
 		
 		//update the demo character
-		if(!mobile)
-			changeDemo();
+		changeDemo();
 		
 		eraseButton.color = Color.white;
 		
@@ -790,7 +803,7 @@ public class CharacterPlacement : MonoBehaviour {
                 }
 			}
 			//normally, return the hit point
-			if (!Input.GetKey(levelData.snappingKey) && !levelData.grid){
+			if (!Input.GetKey(levelData.snappingKey)){
 				return hit.point;
 			}
 			else{
@@ -983,19 +996,16 @@ public class CharacterPlacement : MonoBehaviour {
 	
 	public void showGrid(){
 		//show or hide the grid and change the button text
-		if(!mobile){
-			if(gridButtonText.text == "Grid Layout"){
-				gridButtonText.text = "Default 3D Layout";
-			}
-			else{
-				gridButtonText.text = "Grid Layout";
-			}
-		
-			grid.SetBool("show", !grid.GetBool("show"));
+		if (gridButtonText.text == "Grid Layout")
+		{
+			gridButtonText.text = "Default 3D Layout";
 		}
-		else{
-			showHideLeftPanel();
+		else
+		{
+			gridButtonText.text = "Grid Layout";
 		}
+
+		grid.SetBool("show", !grid.GetBool("show"));
 	}
 	
 	IEnumerator battleUI(){

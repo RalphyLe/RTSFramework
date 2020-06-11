@@ -23,6 +23,16 @@ public class UnitGroup
             units.Remove(unit);
     }
 
+    public int[] GetUnitsTileIndex()
+    {
+        int[] indices = new int[units.Count];
+        for(int i = 0; i < indices.Length; i++)
+        {
+            indices[i] = GridManager.Instance.GetTileWithPos(units[i].transform.position);
+        }
+        return indices;
+    }
+
     public void RemoveAllUnit()
     {
         units.Clear();

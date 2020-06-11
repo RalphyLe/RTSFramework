@@ -55,10 +55,11 @@ public class GridManager:MonoBehaviour
         return GetTileWithPos(trans);
     }
 
-    public void SetCurrentTileUnit(Unit unit)
+    public void SetCurrentTileUnit(Vector3 pos,Unit unit)
     {
-        if (curIndex >= 0)
-            grids[curIndex].unit = unit;
+        int tileId = GetTileWithPos(pos);
+        if (tileId >= 0)
+            grids[tileId].unit = unit;
     }
 
     private void OnDrawGizmos()
