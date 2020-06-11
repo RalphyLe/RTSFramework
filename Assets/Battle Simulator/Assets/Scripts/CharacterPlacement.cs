@@ -400,10 +400,6 @@ public class CharacterPlacement : MonoBehaviour {
 		return true;
 	}
 	
-	bool tileHasPlaceUnit(int index)
-	{
-		return GridManager.Instance.HasPlaceUnit(index);
-	}
 
 	bool groupCanPlace()
     {
