@@ -7,7 +7,7 @@ namespace Framework.Runtime
     /// 任务池
     /// </summary>
     /// <typeparam name="T">任务类型</typeparam>
-    public class TaskPool<T> where T : ITask
+    public class TaskPool<T> where T : TaskBase
     {
         /// <summary>
         /// 可用任务代理
