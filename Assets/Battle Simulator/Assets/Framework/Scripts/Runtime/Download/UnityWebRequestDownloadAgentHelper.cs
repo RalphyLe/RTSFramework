@@ -21,6 +21,7 @@ namespace Framework.Runtime
 
         private EventHandler<DownloadAgentHelperUpdateBytesEventArgs> m_DownloadAgentHelperUpdateBytesEventHandler = null;
         private EventHandler<DownloadAgentHelperUpdateLengthEventArgs> m_DownloadAgentHelperUpdateLengthEventHandler = null;
+        private EventHandler<DownloadAgentHelperDownloadProgressChangedEventArgs> m_DownloadAgentHelperDownloadProgressEventHandler = null;
         private EventHandler<DownloadAgentHelperCompleteEventArgs> m_DownloadAgentHelperCompleteEventHandler = null;
         private EventHandler<DownloadAgentHelperErrorEventArgs> m_DownloadAgentHelperErrorEventHandler = null;
 
@@ -51,6 +52,21 @@ namespace Framework.Runtime
             remove
             {
                 m_DownloadAgentHelperUpdateLengthEventHandler -= value;
+            }
+        }
+
+        /// <summary>
+        /// 下载代理辅助器下载进度事件
+        /// </summary>
+        public override event EventHandler<DownloadAgentHelperDownloadProgressChangedEventArgs> DownloadAgentHelperDownloadProgress
+        {
+            add
+            {
+                m_DownloadAgentHelperDownloadProgressEventHandler += value;
+            }
+            remove
+            {
+                m_DownloadAgentHelperDownloadProgressEventHandler -= value;
             }
         }
 

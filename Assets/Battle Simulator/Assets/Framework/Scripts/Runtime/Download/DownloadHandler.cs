@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 #if UNITY_5_4_OR_NEWER
 using UnityEngine.Networking;
 #else
@@ -33,6 +34,11 @@ namespace Framework.Runtime
                 }
 
                 return base.ReceiveData(data, dataLength);
+            }
+
+            protected override float GetProgress()
+            {
+                return base.GetProgress();
             }
         }
     }

@@ -16,6 +16,7 @@ namespace Framework.Runtime
         private float m_Timeout;
         private EventHandler<DownloadStartEventArgs> m_DownloadStartEventHandler;
         private EventHandler<DownloadUpdateEventArgs> m_DownloadUpdateEventHandler;
+        //private EventHandler<DownloadAgentHelperDownloadProgressChangedEventArgs>
         private EventHandler<DownloadSuccessEventArgs> m_DownloadSuccessEventHandler;
         private EventHandler<DownloadFailureEventArgs> m_DownloadFailureEventHandler;
 
@@ -352,7 +353,17 @@ namespace Framework.Runtime
                 ReferencePool.Release(downloadStartEventArgs);
             }
         }
-        
+
+        private void OnDownloadAgentProgressChanged(DownloadAgent sender,float progress)
+        {
+            if (m_DownloadStartEventHandler != null)
+            {
+                DownloadStartEventArgs downloadStartEventArgs = DownloadStartEventArgs.Create(sender.Task.SerialId, sender.Task.DownloadPath, sender.Task.DownloadUri, sender.CurrentLength, sender.Task.UserData);
+                m_DownloadStartEventHandler(this, downloadStartEventArgs);
+                ReferencePool.Release(downloadStartEventArgs);
+            }
+        }
+
         private void OnDownloadAgentUpdate(DownloadAgent sender, int lastDownloadedLength)
         {
             //m_DownloadCounter.RecordDownloadedLength(lastDownloadedLength);
