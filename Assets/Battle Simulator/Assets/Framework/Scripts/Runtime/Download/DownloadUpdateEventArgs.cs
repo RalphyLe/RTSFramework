@@ -1,21 +1,19 @@
-﻿using UnityEngine;
-
-namespace Framework.Runtime
+﻿namespace Framework.Runtime
 {
-    /// <summary>
-    /// 下载失败事件。
-    /// </summary>
-    public sealed class DownloadFailureEventArgs : GlobalEventArgs
+    /**//// <summary>
+        /// 下载更新事件。
+        /// </summary>
+    public sealed class DownloadUpdateEventArgs : GlobalEventArgs
     {
         /// <summary>
-        /// 初始化下载失败事件的新实例。
+        /// 初始化下载更新事件的新实例。
         /// </summary>
-        public DownloadFailureEventArgs()
+        public DownloadUpdateEventArgs()
         {
             SerialId = 0;
             DownloadPath = null;
             DownloadUri = null;
-            ErrorMessage = null;
+            CurrentLength = 0;
             UserData = null;
         }
 
@@ -47,9 +45,9 @@ namespace Framework.Runtime
         }
 
         /// <summary>
-        /// 获取错误信息。
+        /// 获取当前大小。
         /// </summary>
-        public string ErrorMessage
+        public int CurrentLength
         {
             get;
             private set;
@@ -65,34 +63,34 @@ namespace Framework.Runtime
         }
 
         /// <summary>
-        /// 创建下载失败事件。
+        /// 创建下载更新事件。
         /// </summary>
         /// <param name="serialId">下载任务的序列编号。</param>
         /// <param name="downloadPath">下载后存放路径。</param>
         /// <param name="downloadUri">下载地址。</param>
-        /// <param name="errorMessage">错误信息。</param>
+        /// <param name="currentLength">当前大小。</param>
         /// <param name="userData">用户自定义数据。</param>
-        /// <returns>创建的下载失败事件。</returns>
-        public static DownloadFailureEventArgs Create(int serialId, string downloadPath, string downloadUri, string errorMessage, object userData)
+        /// <returns>创建的下载更新事件。</returns>
+        public static DownloadUpdateEventArgs Create(int serialId, string downloadPath, string downloadUri, int currentLength, object userData)
         {
-            DownloadFailureEventArgs downloadFailureEventArgs = ReferencePool.Acquire<DownloadFailureEventArgs>();
-            downloadFailureEventArgs.SerialId = serialId;
-            downloadFailureEventArgs.DownloadPath = downloadPath;
-            downloadFailureEventArgs.DownloadUri = downloadUri;
-            downloadFailureEventArgs.ErrorMessage = errorMessage;
-            downloadFailureEventArgs.UserData = userData;
-            return downloadFailureEventArgs;
+            DownloadUpdateEventArgs downloadUpdateEventArgs = ReferencePool.Acquire<DownloadUpdateEventArgs>();
+            downloadUpdateEventArgs.SerialId = serialId;
+            downloadUpdateEventArgs.DownloadPath = downloadPath;
+            downloadUpdateEventArgs.DownloadUri = downloadUri;
+            downloadUpdateEventArgs.CurrentLength = currentLength;
+            downloadUpdateEventArgs.UserData = userData;
+            return downloadUpdateEventArgs;
         }
 
         /// <summary>
-        /// 清理下载失败事件。
+        /// 清理下载更新事件。
         /// </summary>
         public override void Clear()
         {
             SerialId = 0;
             DownloadPath = null;
             DownloadUri = null;
-            ErrorMessage = null;
+            CurrentLength = 0;
             UserData = null;
         }
     }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.IO;
+using System;
 
 namespace Framework.Runtime
 {
@@ -16,10 +17,10 @@ namespace Framework.Runtime
         private int m_SavedLength;
         private bool m_Disposed;
 
-        //public GameFrameworkAction<DownloadAgent> DownloadAgentStart;
-        //public GameFrameworkAction<DownloadAgent, int> DownloadAgentUpdate;
-        //public GameFrameworkAction<DownloadAgent, int> DownloadAgentSuccess;
-        //public GameFrameworkAction<DownloadAgent, string> DownloadAgentFailure;
+        public GameFrameworkAction<DownloadAgent> DownloadAgentStart;
+        public GameFrameworkAction<DownloadAgent, int> DownloadAgentUpdate;
+        public GameFrameworkAction<DownloadAgent, int> DownloadAgentSuccess;
+        public GameFrameworkAction<DownloadAgent, string> DownloadAgentFailure;
 
         /// <summary>
         /// 初始化下载代理的新实例。
@@ -43,10 +44,10 @@ namespace Framework.Runtime
             m_SavedLength = 0;
             m_Disposed = false;
 
-            //DownloadAgentStart = null;
-            //DownloadAgentUpdate = null;
-            //DownloadAgentSuccess = null;
-            //DownloadAgentFailure = null;
+            DownloadAgentStart = null;
+            DownloadAgentUpdate = null;
+            DownloadAgentSuccess = null;
+            DownloadAgentFailure = null;
         }
 
         /// <summary>
@@ -126,11 +127,6 @@ namespace Framework.Runtime
             m_Helper.DownloadAgentHelperError += OnDownloadAgentHelperError;
         }
 
-        public void Initialize()
-        {
-            throw new System.NotImplementedException();
-        }
-
         public void Reset()
         {
             throw new System.NotImplementedException();
@@ -141,14 +137,173 @@ namespace Framework.Runtime
             throw new System.NotImplementedException();
         }
 
+        /// <summary>
+        /// 开始处理下载任务。
+        /// </summary>
+        /// <param name="task">要处理的下载任务。</param>
+        /// <returns>开始处理任务的状态。</returns>
         public void Start(DownloadTask task)
         {
-            throw new System.NotImplementedException();
+            if (task == null)
+            {
+                Debug.LogError("Task is invalid.");
+            }
+
+            m_Task = task;
+
+            m_Task.Status = DownloadTaskStatus.Doing;
+            string downloadFile = string.Format("{0}.download", m_Task.DownloadPath);
+
+            try
+            {
+                if (File.Exists(downloadFile))
+                {
+                    m_FileStream = File.OpenWrite(downloadFile);
+                    m_FileStream.Seek(0, SeekOrigin.End);
+                    m_StartLength = m_SavedLength = (int)m_FileStream.Length;
+                    m_DownloadedLength = 0;
+                }
+                else
+                {
+                    string directory = Path.GetDirectoryName(m_Task.DownloadPath);
+                    if (!Directory.Exists(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                    }
+
+                    m_FileStream = new FileStream(downloadFile, FileMode.Create, FileAccess.Write);
+                    m_StartLength = m_SavedLength = m_DownloadedLength = 0;
+                }
+
+                if (DownloadAgentStart != null)
+                {
+                    DownloadAgentStart(this);
+                }
+
+                if (m_StartLength > 0)
+                {
+                    m_Helper.Download(m_Task.DownloadUri, m_StartLength, m_Task.UserData);
+                }
+                else
+                {
+                    m_Helper.Download(m_Task.DownloadUri, m_Task.UserData);
+                }
+                //return StartTaskStatus.CanResume;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError(exception.Message);
+                //DownloadAgentHelperErrorEventArgs downloadAgentHelperErrorEventArgs = DownloadAgentHelperErrorEventArgs.Create(false, exception.ToString());
+                //OnDownloadAgentHelperError(this, downloadAgentHelperErrorEventArgs);
+                //ReferencePool.Release(downloadAgentHelperErrorEventArgs);
+                //return StartTaskStatus.UnknownError;
+            }
         }
 
+        /// <summary>
+        /// 下载代理轮询。
+        /// </summary>
+        /// <param name="elapseSeconds">逻辑流逝时间，以秒为单位。</param>
+        /// <param name="realElapseSeconds">真实流逝时间，以秒为单位。</param>
         public void Update(float elapseSeconds, float realElapseSeconds)
         {
-            throw new System.NotImplementedException();
+            if (m_Task.Status == DownloadTaskStatus.Doing)
+            {
+                m_WaitTime += realElapseSeconds;
+                if (m_WaitTime >= m_Task.Timeout)
+                {
+                    //DownloadAgentHelperErrorEventArgs downloadAgentHelperErrorEventArgs = DownloadAgentHelperErrorEventArgs.Create(false, "Timeout");
+                    //OnDownloadAgentHelperError(this, downloadAgentHelperErrorEventArgs);
+                    //ReferencePool.Release(downloadAgentHelperErrorEventArgs);
+                }
+            }
+        }
+
+        private void OnDownloadAgentHelperUpdateBytes(object sender, DownloadAgentHelperUpdateBytesEventArgs e)
+        {
+            m_WaitTime = 0f;
+            try
+            {
+                m_FileStream.Write(e.GetBytes(), e.Offset, e.Length);
+                m_WaitFlushSize += e.Length;
+                m_SavedLength += e.Length;
+
+                if (m_WaitFlushSize >= m_Task.FlushSize)
+                {
+                    m_FileStream.Flush();
+                    m_WaitFlushSize = 0;
+                }
+            }
+            catch (Exception exception)
+            {
+                DownloadAgentHelperErrorEventArgs downloadAgentHelperErrorEventArgs = DownloadAgentHelperErrorEventArgs.Create(false, exception.ToString());
+                OnDownloadAgentHelperError(this, downloadAgentHelperErrorEventArgs);
+                ReferencePool.Release(downloadAgentHelperErrorEventArgs);
+            }
+        }
+
+        private void OnDownloadAgentHelperUpdateLength(object sender, DownloadAgentHelperUpdateLengthEventArgs e)
+        {
+            m_WaitTime = 0f;
+            m_DownloadedLength += e.DeltaLength;
+            if (DownloadAgentUpdate != null)
+            {
+                DownloadAgentUpdate(this, e.DeltaLength);
+            }
+        }
+
+        private void OnDownloadAgentHelperComplete(object sender, DownloadAgentHelperCompleteEventArgs e)
+        {
+            m_WaitTime = 0f;
+            m_DownloadedLength = e.Length;
+            if (m_SavedLength != CurrentLength)
+            {
+                Debug.LogError("Internal download error.");
+            }
+
+            m_Helper.Reset();
+            m_FileStream.Close();
+            m_FileStream = null;
+
+            if (File.Exists(m_Task.DownloadPath))
+            {
+                File.Delete(m_Task.DownloadPath);
+            }
+
+            File.Move(string.Format("{0}.download", m_Task.DownloadPath), m_Task.DownloadPath);
+
+            m_Task.Status = DownloadTaskStatus.Done;
+
+            if (DownloadAgentSuccess != null)
+            {
+                DownloadAgentSuccess(this, e.Length);
+            }
+
+            m_Task.Done = true;
+        }
+
+        private void OnDownloadAgentHelperError(object sender, DownloadAgentHelperErrorEventArgs e)
+        {
+            m_Helper.Reset();
+            if (m_FileStream != null)
+            {
+                m_FileStream.Close();
+                m_FileStream = null;
+            }
+
+            if (e.DeleteDownloading)
+            {
+                File.Delete(string.Format("{0}.download", m_Task.DownloadPath));
+            }
+
+            m_Task.Status = DownloadTaskStatus.Error;
+
+            if (DownloadAgentFailure != null)
+            {
+                DownloadAgentFailure(this, e.ErrorMessage);
+            }
+
+            m_Task.Done = true;
         }
     } 
 }

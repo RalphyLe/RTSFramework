@@ -10,7 +10,7 @@ namespace Framework.Runtime
         // <summary>
         /// 事件类型ID
         /// </summary>
-        public abstract int Id { get; }
+        public int Id { get; }
 
         public abstract void Clear();
     }

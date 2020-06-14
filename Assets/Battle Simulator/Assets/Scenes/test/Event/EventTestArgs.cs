@@ -8,15 +8,6 @@ public class EventTestArgs : GlobalEventArgs
 
     public string m_Name;
 
-
-    public override int Id
-    {
-        get
-        {
-            return 1;
-        }
-    }
-
     public override void Clear()
     {
         m_Name = string.Empty;
