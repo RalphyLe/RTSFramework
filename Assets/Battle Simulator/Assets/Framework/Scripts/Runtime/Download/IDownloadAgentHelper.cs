@@ -55,5 +55,7 @@ namespace Framework.Runtime
         /// 重置下载代理辅助器。
         /// </summary>
         void Reset();
+
+        void Update(float elapseSeconds, float realElapseSeconds);
     }
 }
