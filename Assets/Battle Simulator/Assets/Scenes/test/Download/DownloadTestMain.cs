@@ -68,21 +68,25 @@ public class DownloadTestMain : MonoBehaviour
 
     private void OnDownloadStart(object sender, DownloadStartEventArgs e)
     {
+        Debug.Log("开始下载");
         //m_EventComponent.Fire(this, DownloadStartEventArgs.Create(e));
     }
 
     private void OnDownloadUpdate(object sender, DownloadUpdateEventArgs e)
     {
+        Debug.Log("已下载长度：" + e.CurrentLength);
         //m_EventComponent.Fire(this, DownloadUpdateEventArgs.Create(e));
     }
 
     private void OnDownloadSuccess(object sender, DownloadSuccessEventArgs e)
     {
+        Debug.Log("下载完毕");
         //m_EventComponent.Fire(this, DownloadSuccessEventArgs.Create(e));
     }
 
     private void OnDownloadFailure(object sender, DownloadFailureEventArgs e)
     {
+        Debug.Log("下载失败");
         //Log.Warning("Download failure, download serial id '{0}', download path '{1}', download uri '{2}', error message '{3}'.", e.SerialId.ToString(), e.DownloadPath, e.DownloadUri, e.ErrorMessage);
         //m_EventComponent.Fire(this, DownloadFailureEventArgs.Create(e));
     }

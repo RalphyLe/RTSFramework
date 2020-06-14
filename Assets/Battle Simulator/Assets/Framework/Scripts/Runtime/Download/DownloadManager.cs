@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System;
+using System.IO;
 
 namespace Framework.Runtime
 {
@@ -290,20 +291,25 @@ namespace Framework.Runtime
         /// <returns>新增下载任务的序列编号。</returns>
         public int AddDownload(string downloadPath, string downloadUri, int priority, object userData)
         {
-            //if (string.IsNullOrEmpty(downloadPath))
-            //{
-            //    throw new GameFrameworkException("Download path is invalid.");
-            //}
-            //
-            //if (string.IsNullOrEmpty(downloadUri))
-            //{
-            //    throw new GameFrameworkException("Download uri is invalid.");
-            //}
-            //
-            //if (TotalAgentCount <= 0)
-            //{
-            //    throw new GameFrameworkException("You must add download agent first.");
-            //}
+            if(File.Exists(downloadPath))
+            {
+                Debug.LogError("the file has exit,do not need to load again！");
+                return -1;
+            }
+            if (string.IsNullOrEmpty(downloadPath))
+            {
+                Debug.LogError("Download path is invalid.");
+            }
+
+            if (string.IsNullOrEmpty(downloadUri))
+            {
+                Debug.LogError("Download uri is invalid.");
+            }
+
+            if (TotalAgentCount <= 0)
+            {
+                Debug.LogError("You must add download agent first.");
+            }
 
             DownloadTask downloadTask = DownloadTask.Create(downloadPath, downloadUri, priority, m_FlushSize, m_Timeout, userData);
             m_TaskPool.AddTask(downloadTask);
