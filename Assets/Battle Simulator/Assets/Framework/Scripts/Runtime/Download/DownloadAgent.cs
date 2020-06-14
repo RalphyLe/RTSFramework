@@ -129,12 +129,28 @@ namespace Framework.Runtime
 
         public void Reset()
         {
-            throw new System.NotImplementedException();
+            m_Helper.Reset();
+
+            if (m_FileStream != null)
+            {
+                m_FileStream.Close();
+                m_FileStream = null;
+            }
+
+            m_Task = null;
+            m_WaitFlushSize = 0;
+            m_WaitTime = 0f;
+            m_StartLength = 0;
+            m_DownloadedLength = 0;
+            m_SavedLength = 0;
         }
 
         public void Shutdown()
         {
-            throw new System.NotImplementedException();
+            m_Helper.DownloadAgentHelperUpdateBytes -= OnDownloadAgentHelperUpdateBytes;
+            m_Helper.DownloadAgentHelperUpdateLength -= OnDownloadAgentHelperUpdateLength;
+            m_Helper.DownloadAgentHelperComplete -= OnDownloadAgentHelperComplete;
+            m_Helper.DownloadAgentHelperError -= OnDownloadAgentHelperError;
         }
 
         /// <summary>
@@ -193,9 +209,9 @@ namespace Framework.Runtime
             catch (Exception exception)
             {
                 Debug.LogError(exception.Message);
-                //DownloadAgentHelperErrorEventArgs downloadAgentHelperErrorEventArgs = DownloadAgentHelperErrorEventArgs.Create(false, exception.ToString());
-                //OnDownloadAgentHelperError(this, downloadAgentHelperErrorEventArgs);
-                //ReferencePool.Release(downloadAgentHelperErrorEventArgs);
+                DownloadAgentHelperErrorEventArgs downloadAgentHelperErrorEventArgs = DownloadAgentHelperErrorEventArgs.Create(false, exception.ToString());
+                OnDownloadAgentHelperError(this, downloadAgentHelperErrorEventArgs);
+                ReferencePool.Release(downloadAgentHelperErrorEventArgs);
                 //return StartTaskStatus.UnknownError;
             }
         }
@@ -212,10 +228,11 @@ namespace Framework.Runtime
                 m_WaitTime += realElapseSeconds;
                 if (m_WaitTime >= m_Task.Timeout)
                 {
-                    //DownloadAgentHelperErrorEventArgs downloadAgentHelperErrorEventArgs = DownloadAgentHelperErrorEventArgs.Create(false, "Timeout");
-                    //OnDownloadAgentHelperError(this, downloadAgentHelperErrorEventArgs);
-                    //ReferencePool.Release(downloadAgentHelperErrorEventArgs);
+                    DownloadAgentHelperErrorEventArgs downloadAgentHelperErrorEventArgs = DownloadAgentHelperErrorEventArgs.Create(false, "Timeout");
+                    OnDownloadAgentHelperError(this, downloadAgentHelperErrorEventArgs);
+                    ReferencePool.Release(downloadAgentHelperErrorEventArgs);
                 }
+                m_Helper.Update(elapseSeconds, realElapseSeconds);
             }
         }
 

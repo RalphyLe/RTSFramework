@@ -202,7 +202,7 @@ namespace Framework.Runtime
             m_Disposed = true;
         }
 
-        private void Update()
+        public override void Update(float elapseSeconds, float realElapseSeconds)
         {
             if (m_UnityWebRequest == null)
             {
