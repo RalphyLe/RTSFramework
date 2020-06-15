@@ -127,7 +127,7 @@ namespace Framework.Runtime
             m_Helper.DownloadAgentHelperUpdateLength += OnDownloadAgentHelperUpdateLength;
             m_Helper.DownloadAgentHelperComplete += OnDownloadAgentHelperComplete;
             m_Helper.DownloadAgentHelperError += OnDownloadAgentHelperError;
-            m_Helper.DownloadAgentHelperDownloadProgress += OnDownloadAgentHelperDownloadProgress;
+            m_Helper.DownloadAgentHelperProgress += OnDownloadAgentHelperDownloadProgress;
         }
 
         public void Reset()
@@ -154,7 +154,7 @@ namespace Framework.Runtime
             m_Helper.DownloadAgentHelperUpdateLength -= OnDownloadAgentHelperUpdateLength;
             m_Helper.DownloadAgentHelperComplete -= OnDownloadAgentHelperComplete;
             m_Helper.DownloadAgentHelperError -= OnDownloadAgentHelperError;
-            m_Helper.DownloadAgentHelperDownloadProgress -= OnDownloadAgentHelperDownloadProgress;
+            m_Helper.DownloadAgentHelperProgress -= OnDownloadAgentHelperDownloadProgress;
         }
 
         /// <summary>
@@ -327,7 +327,7 @@ namespace Framework.Runtime
             m_Task.Done = true;
         }
 
-        private void OnDownloadAgentHelperDownloadProgress(object sender, DownloadAgentHelperDownloadProgressChangedEventArgs e)
+        private void OnDownloadAgentHelperDownloadProgress(object sender, DownloadAgentHelperProgressEventArgs e)
         {
             m_WaitTime = 0f;
             if (DownloadAgentProgress != null)

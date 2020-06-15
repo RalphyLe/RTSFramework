@@ -21,7 +21,7 @@ namespace Framework.Runtime
 
         private EventHandler<DownloadAgentHelperUpdateBytesEventArgs> m_DownloadAgentHelperUpdateBytesEventHandler = null;
         private EventHandler<DownloadAgentHelperUpdateLengthEventArgs> m_DownloadAgentHelperUpdateLengthEventHandler = null;
-        private EventHandler<DownloadAgentHelperDownloadProgressChangedEventArgs> m_DownloadAgentHelperDownloadProgressEventHandler = null;
+        private EventHandler<DownloadAgentHelperProgressEventArgs> m_DownloadAgentHelperProgressEventHandler = null;
         private EventHandler<DownloadAgentHelperCompleteEventArgs> m_DownloadAgentHelperCompleteEventHandler = null;
         private EventHandler<DownloadAgentHelperErrorEventArgs> m_DownloadAgentHelperErrorEventHandler = null;
 
@@ -58,15 +58,15 @@ namespace Framework.Runtime
         /// <summary>
         /// 下载代理辅助器下载进度事件
         /// </summary>
-        public override event EventHandler<DownloadAgentHelperDownloadProgressChangedEventArgs> DownloadAgentHelperDownloadProgress
+        public override event EventHandler<DownloadAgentHelperProgressEventArgs> DownloadAgentHelperProgress
         {
             add
             {
-                m_DownloadAgentHelperDownloadProgressEventHandler += value;
+                m_DownloadAgentHelperProgressEventHandler += value;
             }
             remove
             {
-                m_DownloadAgentHelperDownloadProgressEventHandler -= value;
+                m_DownloadAgentHelperProgressEventHandler -= value;
             }
         }
 
@@ -230,6 +230,7 @@ namespace Framework.Runtime
                 return;
             }
 
+
             bool isError = false;
 #if UNITY_2017_1_OR_NEWER
             isError = m_UnityWebRequest.isNetworkError || m_UnityWebRequest.isHttpError;
@@ -244,6 +245,10 @@ namespace Framework.Runtime
             }
             else
             {
+                //DownloadAgentHelperProgressEventArgs downloadAgentHelperProgressEventArgs = DownloadAgentHelperProgressEventArgs.Create(1.0f);
+                //m_DownloadAgentHelperProgressEventHandler(this, downloadAgentHelperProgressEventArgs);
+                //ReferencePool.Release(downloadAgentHelperProgressEventArgs);
+
                 DownloadAgentHelperCompleteEventArgs downloadAgentHelperCompleteEventArgs = DownloadAgentHelperCompleteEventArgs.Create((int)m_UnityWebRequest.downloadedBytes);
                 m_DownloadAgentHelperCompleteEventHandler(this, downloadAgentHelperCompleteEventArgs);
                 ReferencePool.Release(downloadAgentHelperCompleteEventArgs);

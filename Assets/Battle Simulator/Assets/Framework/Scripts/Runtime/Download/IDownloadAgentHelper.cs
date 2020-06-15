@@ -20,7 +20,7 @@ namespace Framework.Runtime
         /// <summary>
         /// 下载代理辅助器下载进度事件。
         /// </summary>
-        event EventHandler<DownloadAgentHelperDownloadProgressChangedEventArgs> DownloadAgentHelperDownloadProgress;
+        event EventHandler<DownloadAgentHelperProgressEventArgs> DownloadAgentHelperProgress;
 
         /// <summary>
         /// 下载代理辅助器完成事件。

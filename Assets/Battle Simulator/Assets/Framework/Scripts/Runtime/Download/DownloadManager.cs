@@ -16,7 +16,7 @@ namespace Framework.Runtime
         private float m_Timeout;
         private EventHandler<DownloadStartEventArgs> m_DownloadStartEventHandler;
         private EventHandler<DownloadUpdateEventArgs> m_DownloadUpdateEventHandler;
-        //private EventHandler<DownloadAgentHelperDownloadProgressChangedEventArgs>
+        private EventHandler<DownloadProgressEventArgs> m_DownloadProcessChangedEventHandler;
         private EventHandler<DownloadSuccessEventArgs> m_DownloadSuccessEventHandler;
         private EventHandler<DownloadFailureEventArgs> m_DownloadFailureEventHandler;
 
@@ -36,6 +36,7 @@ namespace Framework.Runtime
             m_Timeout = 30f;
             m_DownloadStartEventHandler = null;
             m_DownloadUpdateEventHandler = null;
+            m_DownloadProcessChangedEventHandler = null;
             m_DownloadSuccessEventHandler = null;
             m_DownloadFailureEventHandler = null;
         }
@@ -212,6 +213,22 @@ namespace Framework.Runtime
             }
         }
 
+
+        /// <summary>
+        /// 下载进度事件。
+        /// </summary>
+        public event EventHandler<DownloadProgressEventArgs> DownloadProgress
+        {
+            add
+            {
+                m_DownloadProcessChangedEventHandler += value;
+            }
+            remove
+            {
+                m_DownloadProcessChangedEventHandler -= value;
+            }
+        }
+
         /// <summary>
         /// 下载管理器轮询。
         /// </summary>
@@ -243,7 +260,7 @@ namespace Framework.Runtime
             agent.DownloadAgentUpdate += OnDownloadAgentUpdate;
             agent.DownloadAgentSuccess += OnDownloadAgentSuccess;
             agent.DownloadAgentFailure += OnDownloadAgentFailure;
-        
+            agent.DownloadAgentProgress += OnDownloadAgentProgressChanged;
             m_TaskPool.AddAgent(agent);
         }
 
@@ -356,11 +373,11 @@ namespace Framework.Runtime
 
         private void OnDownloadAgentProgressChanged(DownloadAgent sender,float progress)
         {
-            if (m_DownloadStartEventHandler != null)
+            if (m_DownloadProcessChangedEventHandler != null)
             {
-                DownloadStartEventArgs downloadStartEventArgs = DownloadStartEventArgs.Create(sender.Task.SerialId, sender.Task.DownloadPath, sender.Task.DownloadUri, sender.CurrentLength, sender.Task.UserData);
-                m_DownloadStartEventHandler(this, downloadStartEventArgs);
-                ReferencePool.Release(downloadStartEventArgs);
+                DownloadProgressEventArgs downloadProgressEventArgs = DownloadProgressEventArgs.Create(sender.Task.SerialId, sender.Task.DownloadPath, sender.Task.DownloadUri, sender.CurrentLength, sender.Task.UserData);
+                m_DownloadProcessChangedEventHandler(this, downloadProgressEventArgs);
+                ReferencePool.Release(downloadProgressEventArgs);
             }
         }
 

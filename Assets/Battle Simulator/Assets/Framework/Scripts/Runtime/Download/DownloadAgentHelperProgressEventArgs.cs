@@ -6,12 +6,12 @@ namespace Framework.Runtime
     /// <summary>
     /// 下载代理辅助器下载进度事件。
     /// </summary>
-    public sealed class DownloadAgentHelperDownloadProgressChangedEventArgs : GlobalEventArgs
+    public sealed class DownloadAgentHelperProgressEventArgs : GlobalEventArgs
     {
         /// <summary>
         /// 初始化下载代理辅助器下载进度事件的新实例。
         /// </summary>
-        public DownloadAgentHelperDownloadProgressChangedEventArgs()
+        public DownloadAgentHelperProgressEventArgs()
         {
             DownloadProgess = 0;
         }
@@ -29,14 +29,14 @@ namespace Framework.Runtime
         /// 
         /// </summary>
         /// <returns></returns>
-        public static DownloadAgentHelperDownloadProgressChangedEventArgs Create(float downloadProgess)
+        public static DownloadAgentHelperProgressEventArgs Create(float downloadProgess)
         {
             if (downloadProgess <= 0)
             {
                 Debug.LogError("downloadProgess is invalid.");
             }
 
-            DownloadAgentHelperDownloadProgressChangedEventArgs downloadAgentHelperDownloadProgressChangedEventArgs = ReferencePool.Acquire<DownloadAgentHelperDownloadProgressChangedEventArgs>();
+            DownloadAgentHelperProgressEventArgs downloadAgentHelperDownloadProgressChangedEventArgs = ReferencePool.Acquire<DownloadAgentHelperProgressEventArgs>();
             downloadAgentHelperDownloadProgressChangedEventArgs.DownloadProgess = downloadProgess;
             return downloadAgentHelperDownloadProgressChangedEventArgs;
         }

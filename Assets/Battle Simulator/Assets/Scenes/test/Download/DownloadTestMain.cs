@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Framework.Runtime;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [DisallowMultipleComponent]
 public class DownloadTestMain : MonoBehaviour
 {
     private const int DefaultPriority = 0;
     private string url = "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3384032967,474817897&fm=26&gp=0.jpg";
-    private string path = "./qq.jpg";
+    private string path = "./Assets/qq.jpg";
     private const int OneMegaBytes = 1024 * 1024;
     private DownloadManager m_DownloadManager = null;
     private string m_DownloadAgentHelperTypeName = "Framework.Runtime.UnityWebRequestDownloadAgentHelper";
@@ -29,6 +32,7 @@ public class DownloadTestMain : MonoBehaviour
         m_DownloadManager.DownloadUpdate += OnDownloadUpdate;
         m_DownloadManager.DownloadSuccess += OnDownloadSuccess;
         m_DownloadManager.DownloadFailure += OnDownloadFailure;
+        m_DownloadManager.DownloadProgress += OnDownloadProgress;
         m_DownloadManager.FlushSize = m_FlushSize;
         m_DownloadManager.Timeout = m_Timeout;
     }
@@ -40,6 +44,15 @@ public class DownloadTestMain : MonoBehaviour
         {
             AddDownloadAgentHelper(i);
         }
+    }
+
+    public void OnDestroy()
+    {
+        m_DownloadManager.DownloadStart -= OnDownloadStart;
+        m_DownloadManager.DownloadUpdate -= OnDownloadUpdate;
+        m_DownloadManager.DownloadSuccess -= OnDownloadSuccess;
+        m_DownloadManager.DownloadFailure -= OnDownloadFailure;
+        m_DownloadManager.DownloadProgress -= OnDownloadProgress;
     }
 
     /// <summary>
@@ -78,9 +91,18 @@ public class DownloadTestMain : MonoBehaviour
         //m_EventComponent.Fire(this, DownloadUpdateEventArgs.Create(e));
     }
 
+    private void OnDownloadProgress(object sender, DownloadProgressEventArgs e)
+    {
+        Debug.Log("已下载进度：" + e.CurrentProgress);
+        //m_EventComponent.Fire(this, DownloadUpdateEventArgs.Create(e));
+    }
+
     private void OnDownloadSuccess(object sender, DownloadSuccessEventArgs e)
     {
         Debug.Log("下载完毕");
+#if UNITY_EDITOR
+        AssetDatabase.Refresh();
+#endif
         //m_EventComponent.Fire(this, DownloadSuccessEventArgs.Create(e));
     }
 
