@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System;
+using System.IO;
 
 namespace Framework.Runtime
 {
@@ -15,6 +16,7 @@ namespace Framework.Runtime
         private float m_Timeout;
         private EventHandler<DownloadStartEventArgs> m_DownloadStartEventHandler;
         private EventHandler<DownloadUpdateEventArgs> m_DownloadUpdateEventHandler;
+        private EventHandler<DownloadProgressEventArgs> m_DownloadProcessChangedEventHandler;
         private EventHandler<DownloadSuccessEventArgs> m_DownloadSuccessEventHandler;
         private EventHandler<DownloadFailureEventArgs> m_DownloadFailureEventHandler;
 
@@ -34,6 +36,7 @@ namespace Framework.Runtime
             m_Timeout = 30f;
             m_DownloadStartEventHandler = null;
             m_DownloadUpdateEventHandler = null;
+            m_DownloadProcessChangedEventHandler = null;
             m_DownloadSuccessEventHandler = null;
             m_DownloadFailureEventHandler = null;
         }
@@ -210,6 +213,22 @@ namespace Framework.Runtime
             }
         }
 
+
+        /// <summary>
+        /// 下载进度事件。
+        /// </summary>
+        public event EventHandler<DownloadProgressEventArgs> DownloadProgress
+        {
+            add
+            {
+                m_DownloadProcessChangedEventHandler += value;
+            }
+            remove
+            {
+                m_DownloadProcessChangedEventHandler -= value;
+            }
+        }
+
         /// <summary>
         /// 下载管理器轮询。
         /// </summary>
@@ -241,7 +260,7 @@ namespace Framework.Runtime
             agent.DownloadAgentUpdate += OnDownloadAgentUpdate;
             agent.DownloadAgentSuccess += OnDownloadAgentSuccess;
             agent.DownloadAgentFailure += OnDownloadAgentFailure;
-        
+            agent.DownloadAgentProgress += OnDownloadAgentProgressChanged;
             m_TaskPool.AddAgent(agent);
         }
 
@@ -290,20 +309,25 @@ namespace Framework.Runtime
         /// <returns>新增下载任务的序列编号。</returns>
         public int AddDownload(string downloadPath, string downloadUri, int priority, object userData)
         {
-            //if (string.IsNullOrEmpty(downloadPath))
-            //{
-            //    throw new GameFrameworkException("Download path is invalid.");
-            //}
-            //
-            //if (string.IsNullOrEmpty(downloadUri))
-            //{
-            //    throw new GameFrameworkException("Download uri is invalid.");
-            //}
-            //
-            //if (TotalAgentCount <= 0)
-            //{
-            //    throw new GameFrameworkException("You must add download agent first.");
-            //}
+            if(File.Exists(downloadPath))
+            {
+                Debug.LogError("the file has exit,do not need to load again！");
+                return -1;
+            }
+            if (string.IsNullOrEmpty(downloadPath))
+            {
+                Debug.LogError("Download path is invalid.");
+            }
+
+            if (string.IsNullOrEmpty(downloadUri))
+            {
+                Debug.LogError("Download uri is invalid.");
+            }
+
+            if (TotalAgentCount <= 0)
+            {
+                Debug.LogError("You must add download agent first.");
+            }
 
             DownloadTask downloadTask = DownloadTask.Create(downloadPath, downloadUri, priority, m_FlushSize, m_Timeout, userData);
             m_TaskPool.AddTask(downloadTask);
@@ -346,7 +370,17 @@ namespace Framework.Runtime
                 ReferencePool.Release(downloadStartEventArgs);
             }
         }
-        
+
+        private void OnDownloadAgentProgressChanged(DownloadAgent sender,float progress)
+        {
+            if (m_DownloadProcessChangedEventHandler != null)
+            {
+                DownloadProgressEventArgs downloadProgressEventArgs = DownloadProgressEventArgs.Create(sender.Task.SerialId, sender.Task.DownloadPath, sender.Task.DownloadUri, progress, sender.Task.UserData);
+                m_DownloadProcessChangedEventHandler(this, downloadProgressEventArgs);
+                ReferencePool.Release(downloadProgressEventArgs);
+            }
+        }
+
         private void OnDownloadAgentUpdate(DownloadAgent sender, int lastDownloadedLength)
         {
             //m_DownloadCounter.RecordDownloadedLength(lastDownloadedLength);

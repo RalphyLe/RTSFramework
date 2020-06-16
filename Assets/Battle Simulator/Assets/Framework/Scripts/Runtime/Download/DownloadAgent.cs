@@ -20,6 +20,7 @@ namespace Framework.Runtime
         public GameFrameworkAction<DownloadAgent> DownloadAgentStart;
         public GameFrameworkAction<DownloadAgent, int> DownloadAgentUpdate;
         public GameFrameworkAction<DownloadAgent, int> DownloadAgentSuccess;
+        public GameFrameworkAction<DownloadAgent, float> DownloadAgentProgress;
         public GameFrameworkAction<DownloadAgent, string> DownloadAgentFailure;
 
         /// <summary>
@@ -47,6 +48,7 @@ namespace Framework.Runtime
             DownloadAgentStart = null;
             DownloadAgentUpdate = null;
             DownloadAgentSuccess = null;
+            DownloadAgentProgress = null;
             DownloadAgentFailure = null;
         }
 
@@ -125,6 +127,7 @@ namespace Framework.Runtime
             m_Helper.DownloadAgentHelperUpdateLength += OnDownloadAgentHelperUpdateLength;
             m_Helper.DownloadAgentHelperComplete += OnDownloadAgentHelperComplete;
             m_Helper.DownloadAgentHelperError += OnDownloadAgentHelperError;
+            m_Helper.DownloadAgentHelperProgress += OnDownloadAgentHelperDownloadProgress;
         }
 
         public void Reset()
@@ -151,6 +154,7 @@ namespace Framework.Runtime
             m_Helper.DownloadAgentHelperUpdateLength -= OnDownloadAgentHelperUpdateLength;
             m_Helper.DownloadAgentHelperComplete -= OnDownloadAgentHelperComplete;
             m_Helper.DownloadAgentHelperError -= OnDownloadAgentHelperError;
+            m_Helper.DownloadAgentHelperProgress -= OnDownloadAgentHelperDownloadProgress;
         }
 
         /// <summary>
@@ -321,6 +325,16 @@ namespace Framework.Runtime
             }
 
             m_Task.Done = true;
+        }
+
+        private void OnDownloadAgentHelperDownloadProgress(object sender, DownloadAgentHelperProgressEventArgs e)
+        {
+            m_WaitTime = 0f;
+            float progress = e.DownloadProgess == 0 ? 0 : (this.CurrentLength / e.DownloadProgess);
+            if (DownloadAgentProgress != null)
+            {
+                DownloadAgentProgress(this, progress);
+            }
         }
     } 
 }

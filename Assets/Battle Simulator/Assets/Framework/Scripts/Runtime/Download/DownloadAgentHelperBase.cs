@@ -26,6 +26,10 @@ namespace Framework.Runtime
         public abstract event EventHandler<DownloadAgentHelperCompleteEventArgs> DownloadAgentHelperComplete;
 
         /// <summary>
+        /// 下载代理辅助器下载进度事件
+        /// </summary>
+        public abstract event EventHandler<DownloadAgentHelperProgressEventArgs> DownloadAgentHelperProgress;
+        /// <summary>
         /// 下载代理辅助器错误事件。
         /// </summary>
         public abstract event EventHandler<DownloadAgentHelperErrorEventArgs> DownloadAgentHelperError;
