@@ -375,7 +375,7 @@ namespace Framework.Runtime
         {
             if (m_DownloadProcessChangedEventHandler != null)
             {
-                DownloadProgressEventArgs downloadProgressEventArgs = DownloadProgressEventArgs.Create(sender.Task.SerialId, sender.Task.DownloadPath, sender.Task.DownloadUri, sender.CurrentLength, sender.Task.UserData);
+                DownloadProgressEventArgs downloadProgressEventArgs = DownloadProgressEventArgs.Create(sender.Task.SerialId, sender.Task.DownloadPath, sender.Task.DownloadUri, progress, sender.Task.UserData);
                 m_DownloadProcessChangedEventHandler(this, downloadProgressEventArgs);
                 ReferencePool.Release(downloadProgressEventArgs);
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using UnityEngine;
 #if UNITY_5_4_OR_NEWER
 using UnityEngine.Networking;
 #else
@@ -13,11 +14,17 @@ namespace Framework.Runtime
         private sealed class DownloadHandler : DownloadHandlerScript
         {
             private readonly UnityWebRequestDownloadAgentHelper m_Owner;
-
+            private ulong contentLength = 0;
             public DownloadHandler(UnityWebRequestDownloadAgentHelper owner)
                 : base(owner.m_CachedBytes)
             {
                 m_Owner = owner;
+            }
+
+            protected override void ReceiveContentLengthHeader(ulong contentLength)
+            {
+                base.ReceiveContentLengthHeader(contentLength);
+                this.contentLength = contentLength;
             }
 
             protected override bool ReceiveData(byte[] data, int dataLength)
@@ -31,15 +38,19 @@ namespace Framework.Runtime
                     DownloadAgentHelperUpdateLengthEventArgs downloadAgentHelperUpdateLengthEventArgs = DownloadAgentHelperUpdateLengthEventArgs.Create(dataLength);
                     m_Owner.m_DownloadAgentHelperUpdateLengthEventHandler(this, downloadAgentHelperUpdateLengthEventArgs);
                     ReferencePool.Release(downloadAgentHelperUpdateLengthEventArgs);
+
+                    DownloadAgentHelperProgressEventArgs downloadAgentHelperProgressEventArgs = DownloadAgentHelperProgressEventArgs.Create(contentLength);
+                    m_Owner.m_DownloadAgentHelperProgressEventHandler(this, downloadAgentHelperProgressEventArgs);
+                    ReferencePool.Release(downloadAgentHelperProgressEventArgs);
                 }
 
                 return base.ReceiveData(data, dataLength);
             }
 
-            protected override float GetProgress()
-            {
-                return base.GetProgress();
-            }
+            //protected override float GetProgress()
+            //{
+            //    return this.contentLength==0 ? 0 : m_Owner.
+            //}
         }
     }
 }

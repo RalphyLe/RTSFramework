@@ -330,9 +330,10 @@ namespace Framework.Runtime
         private void OnDownloadAgentHelperDownloadProgress(object sender, DownloadAgentHelperProgressEventArgs e)
         {
             m_WaitTime = 0f;
+            float progress = e.DownloadProgess == 0 ? 0 : (this.CurrentLength / e.DownloadProgess);
             if (DownloadAgentProgress != null)
             {
-                DownloadAgentProgress(this, e.DownloadProgess);
+                DownloadAgentProgress(this, progress);
             }
         }
     } 

@@ -47,7 +47,7 @@
         /// <summary>
         /// 获取当前进度。
         /// </summary>
-        public int CurrentProgress
+        public float CurrentProgress
         {
             get;
             private set;
@@ -71,7 +71,7 @@
         /// <param name="CurrentProgress">当前进度。</param>
         /// <param name="userData">用户自定义数据。</param>
         /// <returns>创建的下载进度事件。</returns>
-        public static DownloadProgressEventArgs Create(int serialId, string downloadPath, string downloadUri, int CurrentProgress, object userData)
+        public static DownloadProgressEventArgs Create(int serialId, string downloadPath, string downloadUri, float CurrentProgress, object userData)
         {
             DownloadProgressEventArgs downloadProgressEventArgs = ReferencePool.Acquire<DownloadProgressEventArgs>();
             downloadProgressEventArgs.SerialId = serialId;
