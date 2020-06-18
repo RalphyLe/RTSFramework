@@ -6,6 +6,7 @@ using System.Xml;
 using UnityEditor;
 using UnityEngine;
 using Framework.Runtime;
+using System;
 
 namespace Framework.Editor
 {
@@ -548,7 +549,7 @@ namespace Framework.Editor
 
         private string GetResourceFullName(string name, string variant)
         {
-            return !string.IsNullOrEmpty(variant) ? Utility.Text.Format("{0}.{1}", name, variant) : name;
+            return !string.IsNullOrEmpty(variant) ? string.Format("{0}.{1}", name, variant) : name;
         }
 
         private bool IsValidResourceName(string name, string variant)
