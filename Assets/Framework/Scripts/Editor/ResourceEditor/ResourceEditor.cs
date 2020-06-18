@@ -177,11 +177,11 @@ namespace Framework.Editor
                     break;
 
                 case MenuState.Rename:
-                    //DrawResourcesMenu_Rename();
+                    DrawResourcesMenu_Rename();
                     break;
 
                 case MenuState.Remove:
-                    //DrawResourcesMenu_Remove();
+                    DrawResourcesMenu_Remove();
                     break;
             }
         }
@@ -260,6 +260,67 @@ namespace Framework.Editor
             }
         }
 
+        private void DrawResourcesMenu_Rename()
+        {
+            if (m_SelectedResource == null)
+            {
+                m_MenuState = MenuState.Normal;
+                return;
+            }
+
+            GUI.SetNextControlName("RenameResourceNameTextField");
+            m_InputResourceName = EditorGUILayout.TextField(m_InputResourceName);
+            GUI.SetNextControlName("RenameResourceVariantTextField");
+            m_InputResourceVariant = EditorGUILayout.TextField(m_InputResourceVariant, GUILayout.Width(60f));
+
+            if (GUI.GetNameOfFocusedControl() == "RenameResourceNameTextField" || GUI.GetNameOfFocusedControl() == "RenameResourceVariantTextField")
+            {
+                if (Event.current.isKey && Event.current.keyCode == KeyCode.Return)
+                {
+                    EditorUtility.DisplayProgressBar("Rename Resource", "Processing...", 0f);
+                    RenameResource(m_SelectedResource, m_InputResourceName, m_InputResourceVariant);
+                    EditorUtility.ClearProgressBar();
+                    Repaint();
+                }
+            }
+
+            if (GUILayout.Button("OK", GUILayout.Width(50f)))
+            {
+                EditorUtility.DisplayProgressBar("Rename Resource", "Processing...", 0f);
+                RenameResource(m_SelectedResource, m_InputResourceName, m_InputResourceVariant);
+                EditorUtility.ClearProgressBar();
+            }
+
+            if (GUILayout.Button("Back", GUILayout.Width(50f)))
+            {
+                m_MenuState = MenuState.Normal;
+            }
+        }
+
+        private void DrawResourcesMenu_Remove()
+        {
+            if (m_SelectedResource == null)
+            {
+                m_MenuState = MenuState.Normal;
+                return;
+            }
+
+            GUILayout.Label(string.Format("Remove '{0}' ?", m_SelectedResource.FullName));
+
+            if (GUILayout.Button("Yes", GUILayout.Width(50f)))
+            {
+                EditorUtility.DisplayProgressBar("Remove Resource", "Processing...", 0f);
+                RemoveResource();
+                EditorUtility.ClearProgressBar();
+                m_MenuState = MenuState.Normal;
+            }
+
+            if (GUILayout.Button("No", GUILayout.Width(50f)))
+            {
+                m_MenuState = MenuState.Normal;
+            }
+        }
+
         private void DrawResourceView()
         {
             m_ResourceViewScroll = EditorGUILayout.BeginScrollView(m_ResourceViewScroll);
@@ -278,7 +339,7 @@ namespace Framework.Editor
             if (GUILayout.Button("None", GUILayout.Width(50f)))
             {
             }
-            //m_Controller.AssetSorter = (AssetSorterType)EditorGUILayout.EnumPopup(m_Controller.AssetSorter, GUILayout.Width(60f));
+            m_Controller.AssetSorter = (AssetSorterType)EditorGUILayout.EnumPopup(m_Controller.AssetSorter, GUILayout.Width(60f));
             GUILayout.Label(string.Empty);
 
             EditorGUI.EndDisabledGroup();
@@ -299,7 +360,73 @@ namespace Framework.Editor
 
         private void DrawSourceAssetsMenu()
         {
+            HashSet<SourceAsset> selectedSourceAssets = GetSelectedSourceAssets();
+            EditorGUI.BeginDisabledGroup(m_SelectedResource == null || selectedSourceAssets.Count <= 0);
+            {
+                if (GUILayout.Button(string.Format("<< {0}", selectedSourceAssets.Count.ToString()), GUILayout.Width(80f)))
+                {
+                    foreach (SourceAsset sourceAsset in selectedSourceAssets)
+                    {
+                        AssignAsset(sourceAsset, m_SelectedResource);
+                    }
 
+                    m_SelectedSourceAssets.Clear();
+                    m_CachedSelectedSourceFolders.Clear();
+                }
+            }
+            EditorGUI.EndDisabledGroup();
+            EditorGUI.BeginDisabledGroup(selectedSourceAssets.Count <= 0);
+            {
+                if (GUILayout.Button(string.Format("<<< {0}", selectedSourceAssets.Count.ToString()), GUILayout.Width(80f)))
+                {
+                    int index = 0;
+                    int count = selectedSourceAssets.Count;
+                    foreach (SourceAsset sourceAsset in selectedSourceAssets)
+                    {
+                        EditorUtility.DisplayProgressBar("Add Resources", string.Format("{0}/{1} processing...", (++index).ToString(), count.ToString()), (float)index / count);
+                        int dotIndex = sourceAsset.FromRootPath.IndexOf('.');
+                        string name = dotIndex > 0 ? sourceAsset.FromRootPath.Substring(0, dotIndex) : sourceAsset.FromRootPath;
+                        AddResource(name, null, false);
+                        Resource resource = m_Controller.GetResource(name, null);
+                        if (resource == null)
+                        {
+                            continue;
+                        }
+
+                        AssignAsset(sourceAsset, resource);
+                    }
+
+                    EditorUtility.DisplayProgressBar("Add Resources", "Complete processing...", 1f);
+                    RefreshResourceTree();
+                    EditorUtility.ClearProgressBar();
+                    m_SelectedSourceAssets.Clear();
+                    m_CachedSelectedSourceFolders.Clear();
+                }
+            }
+            EditorGUI.EndDisabledGroup();
+            bool hideAssignedSourceAssets = EditorGUILayout.ToggleLeft("Hide Assigned", m_HideAssignedSourceAssets, GUILayout.Width(100f));
+            if (hideAssignedSourceAssets != m_HideAssignedSourceAssets)
+            {
+                m_HideAssignedSourceAssets = hideAssignedSourceAssets;
+                m_CachedSelectedSourceFolders.Clear();
+                m_CachedUnselectedSourceFolders.Clear();
+                m_CachedAssignedSourceFolders.Clear();
+                m_CachedUnassignedSourceFolders.Clear();
+            }
+
+            GUILayout.Label(string.Empty);
+            if (GUILayout.Button("Clean", GUILayout.Width(80f)))
+            {
+                EditorUtility.DisplayProgressBar("Clean", "Processing...", 0f);
+                CleanResource();
+                EditorUtility.ClearProgressBar();
+            }
+            if (GUILayout.Button("Save", GUILayout.Width(80f)))
+            {
+                EditorUtility.DisplayProgressBar("Save", "Processing...", 0f);
+                SaveConfiguration();
+                EditorUtility.ClearProgressBar();
+            }
         }
 
         private void DrawResourceFolder(ResourceFolder folder)
@@ -669,6 +796,15 @@ namespace Framework.Editor
             m_SelectedAssetsInSelectedResource.Clear();
         }
 
+        private void CleanResource()
+        {
+            int unknownAssetCount = m_Controller.RemoveUnknownAssets();
+            int unusedResourceCount = m_Controller.RemoveUnusedResources();
+            RefreshResourceTree();
+
+            Debug.Log(string.Format("Clean complete, {0} unknown assets and {1} unused resources has been removed.", unknownAssetCount.ToString(), unusedResourceCount.ToString()));
+        }
+
         private void RefreshResourceTree()
         {
             m_ResourceRoot.Clear();
@@ -731,6 +867,26 @@ namespace Framework.Editor
             }
         }
 
+        private void AssignAsset(SourceAsset sourceAsset, Resource resource)
+        {
+            if (!m_Controller.AssignAsset(sourceAsset.Guid, resource.Name, resource.Variant))
+            {
+                Debug.LogWarning(string.Format("Assign asset '{0}' to resource '{1}' failure.", sourceAsset.Name, resource.FullName));
+            }
+        }
+
+        private void SaveConfiguration()
+        {
+            if (m_Controller.Save())
+            {
+                Debug.Log("Save configuration success.");
+            }
+            else
+            {
+                Debug.LogWarning("Save configuration failure.");
+            }
+        }
+
         private void AddResource(string name, string variant, bool refresh)
         {
             if (variant == string.Empty)
@@ -753,6 +909,67 @@ namespace Framework.Editor
             {
                 Debug.LogWarning(string.Format("Add resource '{0}' failure.", fullName));
             }
+        }
+
+        private void RenameResource(Resource resource, string newName, string newVariant)
+        {
+            if (resource == null)
+            {
+                Debug.LogWarning("Resource is invalid.");
+                return;
+            }
+
+            if (newVariant == string.Empty)
+            {
+                newVariant = null;
+            }
+
+            string oldFullName = resource.FullName;
+            string newFullName = GetResourceFullName(newName, newVariant);
+            if (m_Controller.RenameResource(resource.Name, resource.Variant, newName, newVariant))
+            {
+                RefreshResourceTree();
+                Debug.Log(string.Format("Rename resource '{0}' to '{1}' success.", oldFullName, newFullName));
+                m_MenuState = MenuState.Normal;
+            }
+            else
+            {
+                Debug.LogWarning(string.Format("Rename resource '{0}' to '{1}' failure.", oldFullName, newFullName));
+            }
+        }
+
+        private void RemoveResource()
+        {
+            string fullName = m_SelectedResource.FullName;
+            if (m_Controller.RemoveResource(m_SelectedResource.Name, m_SelectedResource.Variant))
+            {
+                ChangeSelectedResource(null);
+                RefreshResourceTree();
+                Debug.Log(string.Format("Remove resource '{0}' success.", fullName));
+            }
+            else
+            {
+                Debug.LogWarning(string.Format("Remove resource '{0}' failure.", fullName));
+            }
+        }
+
+        private HashSet<SourceAsset> GetSelectedSourceAssets()
+        {
+            if (!m_HideAssignedSourceAssets)
+            {
+                return m_SelectedSourceAssets;
+            }
+
+            HashSet<SourceAsset> selectedUnassignedSourceAssets = new HashSet<SourceAsset>();
+            foreach (SourceAsset sourceAsset in m_SelectedSourceAssets)
+            {
+                if (!IsAssignedSourceAsset(sourceAsset))
+                {
+                    selectedUnassignedSourceAssets.Add(sourceAsset);
+                }
+            }
+
+            return selectedUnassignedSourceAssets;
         }
 
         private string GetResourceFullName(string name, string variant)
