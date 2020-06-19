@@ -7,7 +7,7 @@ namespace Framework.Editor
     /// <summary>
     /// ResourceCollection 配置路径属性。
     /// </summary>
-    public sealed class ResourceCollectionConfigPathAttribute : Attribute
+    public sealed class ResourceCollectionConfigPathAttribute : ConfigPathAttribute
     {
     }
 }
