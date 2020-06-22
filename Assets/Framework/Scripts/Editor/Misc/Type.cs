@@ -32,7 +32,7 @@ namespace Framework.Editor
         /// <returns>配置路径。</returns>
         internal static string GetConfigurationPath<T>() where T : Attribute
         {
-            foreach (System.Type type in Utility.Assembly.GetTypes())
+            foreach (System.Type type in Assembly.GetTypes())
             {
                 if (!type.IsAbstract || !type.IsSealed)
                 {
@@ -84,10 +84,10 @@ namespace Framework.Editor
             List<string> typeNames = new List<string>();
             foreach (string assemblyName in assemblyNames)
             {
-                Assembly assembly = null;
+                System.Reflection.Assembly assembly = null;
                 try
                 {
-                    assembly = Assembly.Load(assemblyName);
+                    assembly = System.Reflection.Assembly.Load(assemblyName);
                 }
                 catch
                 {

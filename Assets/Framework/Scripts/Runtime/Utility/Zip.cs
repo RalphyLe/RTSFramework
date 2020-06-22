@@ -2,13 +2,13 @@
 using System.IO;
 using UnityEngine;
 
-namespace Framework.Runtime
+namespace Framework
 {
 
     /// <summary>
     /// 压缩解压缩相关的实用函数。
     /// </summary>
-    public static partial class Zip
+    public static class Zip
     {
         private static IZipHelper s_ZipHelper = null;
 

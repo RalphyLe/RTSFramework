@@ -1,4 +1,5 @@
-﻿using Framework.Runtime;
+﻿using Framework;
+using Framework.Runtime;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +21,7 @@ namespace Framework.Editor
 
         private readonly string m_ConfigurationPath;
         private readonly ResourceCollection m_ResourceCollection;
-        //private readonly ResourceAnalyzerController m_ResourceAnalyzerController;
+        private readonly ResourceAnalyzerController m_ResourceAnalyzerController;
         private readonly SortedDictionary<string, ResourceData> m_ResourceDatas;
         //private readonly BuildReport m_BuildReport;
         private readonly List<string> m_BuildEventHandlerTypeNames;
@@ -122,13 +123,13 @@ namespace Framework.Editor
             }
         }
 
-        //public string GameFrameworkVersion
-        //{
-        //    get
-        //    {
-        //        return GameFramework.Version.GameFrameworkVersion;
-        //    }
-        //}
+        public string GameFrameworkVersion
+        {
+            get
+            {
+                return Version.GameFrameworkVersion;
+            }
+        }
 
         public string UnityVersion
         {
@@ -329,9 +330,9 @@ namespace Framework.Editor
 
         public event GameFrameworkAction OnAnalyzeCompleted = null;
 
-        //public event GameFrameworkFunc<string, float, bool> ProcessingAssetBundle = null;
-        //
-        //public event GameFrameworkFunc<string, float, bool> ProcessingBinary = null;
+        public event GameFrameworkFunc<string, float, bool> ProcessingAssetBundle = null;
+        
+        public event GameFrameworkFunc<string, float, bool> ProcessingBinary = null;
 
         public event GameFrameworkAction<Platform> ProcessResourceComplete = null;
 
@@ -566,7 +567,7 @@ namespace Framework.Editor
             bool retVal = false;
             if (!string.IsNullOrEmpty(BuildEventHandlerTypeName) && m_BuildEventHandlerTypeNames.Contains(BuildEventHandlerTypeName))
             {
-                System.Type buildEventHandlerType = Utility.Assembly.GetType(BuildEventHandlerTypeName );
+                System.Type buildEventHandlerType = Assembly.GetType(BuildEventHandlerTypeName );
                 if (buildEventHandlerType != null)
                 {
                     IBuildEventHandler buildEventHandler = (IBuildEventHandler)Activator.CreateInstance(buildEventHandlerType);
@@ -587,6 +588,10 @@ namespace Framework.Editor
             return retVal;
         }
 
+        /// <summary>
+        /// 构建资源包
+        /// </summary>
+        /// <returns></returns>
         public bool BuildResources()
         {
             if (!IsValidOutputDirectory)
@@ -594,7 +599,7 @@ namespace Framework.Editor
                 return false;
             }
         
-            Utility.Zip.SetZipHelper(new DefaultZipHelper());
+            Zip.SetZipHelper(new DefaultZipHelper());
         
             if (Directory.Exists(OutputPackagePath))
             {
@@ -676,7 +681,7 @@ namespace Framework.Editor
                 //m_BuildReport.LogInfo("Start prepare build map...");
         
                 AssetBundleBuild[] assetBundleBuildMap = null;
-                //BinaryBuild[] binaryBuildMap = null;
+                BinaryBuild[] binaryBuildMap = null;
                 if (!GetResourceBuildMap(out assetBundleBuildMap, out binaryBuildMap))
                 {
                     //m_BuildReport.LogError("Get resource build map failure.");
@@ -767,10 +772,10 @@ namespace Framework.Editor
             string platformName = platform.ToString();
             //m_BuildReport.LogInfo("Start build resources for '{0}'...", platformName);
         
-            string workingPath = Utility.Text.Format("{0}{1}/", WorkingPath, platformName);
+            string workingPath = string.Format("{0}{1}/", WorkingPath, platformName);
             //m_BuildReport.LogInfo("Working path is '{0}'.", workingPath);
         
-            string outputPackagePath = Utility.Text.Format("{0}{1}/", OutputPackagePath, platformName);
+            string outputPackagePath = string.Format("{0}{1}/", OutputPackagePath, platformName);
             if (OutputPackageSelected)
             {
                 Directory.CreateDirectory(outputPackagePath);
@@ -781,7 +786,7 @@ namespace Framework.Editor
                 //m_BuildReport.LogInfo("Output package is not selected.");
             }
         
-            string outputFullPath = Utility.Text.Format("{0}{1}/", OutputFullPath, platformName);
+            string outputFullPath = string.Format("{0}{1}/", OutputFullPath, platformName);
             if (OutputFullSelected)
             {
                 Directory.CreateDirectory(outputFullPath);
@@ -792,7 +797,7 @@ namespace Framework.Editor
                 //m_BuildReport.LogInfo("Output full is not selected.");
             }
         
-            string outputPackedPath = Utility.Text.Format("{0}{1}/", OutputPackedPath, platformName);
+            string outputPackedPath = string.Format("{0}{1}/", OutputPackedPath, platformName);
             if (OutputPackedSelected)
             {
                 Directory.CreateDirectory(outputPackedPath);
@@ -837,7 +842,7 @@ namespace Framework.Editor
                     }
                 }
         
-                Utility.Path.RemoveEmptyDirectory(workingPath);
+               // Utility.Path.RemoveEmptyDirectory(workingPath);
             }
         
             if (!Directory.Exists(workingPath))
@@ -877,11 +882,11 @@ namespace Framework.Editor
                 {
                     if (ProcessingAssetBundle(fullName, (float)(i + 1) / assetBundleBuildMap.Length))
                     {
-                        m_BuildReport.LogWarning("The build has been canceled by user.");
+                        //m_BuildReport.LogWarning("The build has been canceled by user.");
         
                         if (m_BuildEventHandler != null)
                         {
-                            m_BuildReport.LogInfo("Execute build event handler 'PostprocessPlatform' for '{0}'...", platformName);
+                            //m_BuildReport.LogInfo("Execute build event handler 'PostprocessPlatform' for '{0}'...", platformName);
                             m_BuildEventHandler.PostprocessPlatform(platform, workingPath, OutputPackageSelected, outputPackagePath, OutputFullSelected, outputFullPath, OutputPackedSelected, outputPackedPath, false);
                         }
         
@@ -925,13 +930,13 @@ namespace Framework.Editor
         
             if (OutputPackageSelected)
             {
-                ProcessPackageVersionList(outputPackagePath, platform);
+                //ProcessPackageVersionList(outputPackagePath, platform);
                 //m_BuildReport.LogInfo("Process package version list for '{0}' complete.", platformName);
             }
         
             if (OutputFullSelected)
             {
-                VersionListData versionListData = ProcessUpdatableVersionList(outputFullPath, platform);
+                //VersionListData versionListData = ProcessUpdatableVersionList(outputFullPath, platform);
                 //m_BuildReport.LogInfo("Process updatable version list for '{0}' complete, updatable version list path is '{1}', length is '{2}', hash code is '{3}[0x{3:X8}]', zip length is '{4}', zip hash code is '{5}[0x{5:X8}]'.", platformName, versionListData.Path, versionListData.Length.ToString(), versionListData.HashCode, versionListData.ZipLength.ToString(), versionListData.ZipHashCode);
             }
         
@@ -960,29 +965,29 @@ namespace Framework.Editor
         {
             string fullName = GetResourceFullName(name, variant);
             ResourceData resourceData = m_ResourceDatas[fullName];
-            string fullNameWithExtension = Utility.Text.Format("{0}.{1}", fullName, GetExtension(resourceData));
-            string workingName = Utility.Path.GetRegularPath(Path.Combine(workingPath, fullName.ToLower()));
+            string fullNameWithExtension = string.Format("{0}.{1}", fullName, GetExtension(resourceData));
+            string workingName = Path.Combine(workingPath, fullName.ToLower());
         
             byte[] bytes = File.ReadAllBytes(workingName);
             int length = bytes.Length;
-            int hashCode = Utility.Verifier.GetCrc32(bytes);
+            int hashCode = Verifier.GetCrc32(bytes);
             int zipLength = length;
             int zipHashCode = hashCode;
         
-            byte[] hashBytes = Utility.Converter.GetBytes(hashCode);
+            byte[] hashBytes = Converter.GetBytes(hashCode);
             if (resourceData.LoadType == LoadType.LoadFromMemoryAndQuickDecrypt)
             {
-                bytes = Utility.Encryption.GetQuickXorBytes(bytes, hashBytes);
+                bytes = Encryption.GetQuickXorBytes(bytes, hashBytes);
             }
             else if (resourceData.LoadType == LoadType.LoadFromMemoryAndDecrypt)
             {
-                bytes = Utility.Encryption.GetXorBytes(bytes, hashBytes);
+                bytes = Encryption.GetXorBytes(bytes, hashBytes);
             }
         
             // Package AssetBundle
             if (OutputPackageSelected)
             {
-                string packagePath = Utility.Path.GetRegularPath(Path.Combine(outputPackagePath, fullNameWithExtension));
+                string packagePath = Path.Combine(outputPackagePath, fullNameWithExtension);
                 string packageDirectoryName = Path.GetDirectoryName(packagePath);
                 if (!Directory.Exists(packageDirectoryName))
                 {
@@ -995,7 +1000,7 @@ namespace Framework.Editor
             // Packed AssetBundle
             if (OutputPackedSelected && resourceData.Packed)
             {
-                string packedPath = Utility.Path.GetRegularPath(Path.Combine(outputPackedPath, fullNameWithExtension));
+                string packedPath = Path.Combine(outputPackedPath, fullNameWithExtension);
                 string packedDirectoryName = Path.GetDirectoryName(packedPath);
                 if (!Directory.Exists(packedDirectoryName))
                 {
@@ -1008,8 +1013,8 @@ namespace Framework.Editor
             // Full AssetBundle
             if (OutputFullSelected)
             {
-                string fullNameWithCrc32 = variant != null ? Utility.Text.Format("{0}.{1}.{2:x8}.{3}", name, variant, hashCode, DefaultExtension) : Utility.Text.Format("{0}.{1:x8}.{2}", name, hashCode, DefaultExtension);
-                string fullPath = Utility.Path.GetRegularPath(Path.Combine(outputFullPath, fullNameWithCrc32));
+                string fullNameWithCrc32 = variant != null ? string.Format("{0}.{1}.{2:x8}.{3}", name, variant, hashCode, DefaultExtension) : string.Format("{0}.{1:x8}.{2}", name, hashCode, DefaultExtension);
+                string fullPath = Path.Combine(outputFullPath, fullNameWithCrc32);
                 string fullDirectoryName = Path.GetDirectoryName(fullPath);
                 if (!Directory.Exists(fullDirectoryName))
                 {
@@ -1018,9 +1023,9 @@ namespace Framework.Editor
         
                 if (zip)
                 {
-                    byte[] zipBytes = Utility.Zip.Compress(bytes);
+                    byte[] zipBytes = Zip.Compress(bytes);
                     zipLength = zipBytes.Length;
-                    zipHashCode = Utility.Verifier.GetCrc32(zipBytes);
+                    zipHashCode = Verifier.GetCrc32(zipBytes);
                     File.WriteAllBytes(fullPath, zipBytes);
                 }
                 else
@@ -1036,30 +1041,30 @@ namespace Framework.Editor
         {
             string fullName = GetResourceFullName(name, variant);
             ResourceData resourceData = m_ResourceDatas[fullName];
-            string fullNameWithExtension = Utility.Text.Format("{0}.{1}", fullName, GetExtension(resourceData));
+            string fullNameWithExtension = string.Format("{0}.{1}", fullName, GetExtension(resourceData));
             string assetName = resourceData.GetAssetNames()[0];
-            string assetPath = Utility.Path.GetRegularPath(Application.dataPath.Substring(0, Application.dataPath.Length - AssetsStringLength) + assetName);
+            string assetPath = Application.dataPath.Substring(0, Application.dataPath.Length - AssetsStringLength) + assetName;
         
             byte[] bytes = File.ReadAllBytes(assetPath);
             int length = bytes.Length;
-            int hashCode = Utility.Verifier.GetCrc32(bytes);
+            int hashCode = Verifier.GetCrc32(bytes);
             int zipLength = length;
             int zipHashCode = hashCode;
         
-            byte[] hashBytes = Utility.Converter.GetBytes(hashCode);
+            byte[] hashBytes = Converter.GetBytes(hashCode);
             if (resourceData.LoadType == LoadType.LoadFromBinaryAndQuickDecrypt)
             {
-                bytes = Utility.Encryption.GetQuickXorBytes(bytes, hashBytes);
+                bytes = Encryption.GetQuickXorBytes(bytes, hashBytes);
             }
             else if (resourceData.LoadType == LoadType.LoadFromBinaryAndDecrypt)
             {
-                bytes = Utility.Encryption.GetXorBytes(bytes, hashBytes);
+                bytes = Encryption.GetXorBytes(bytes, hashBytes);
             }
         
             // Package Binary
             if (OutputPackageSelected)
             {
-                string packagePath = Utility.Path.GetRegularPath(Path.Combine(outputPackagePath, fullNameWithExtension));
+                string packagePath = Path.Combine(outputPackagePath, fullNameWithExtension);
                 string packageDirectoryName = Path.GetDirectoryName(packagePath);
                 if (!Directory.Exists(packageDirectoryName))
                 {
@@ -1072,7 +1077,7 @@ namespace Framework.Editor
             // Packed Binary
             if (OutputPackedSelected && resourceData.Packed)
             {
-                string packedPath = Utility.Path.GetRegularPath(Path.Combine(outputPackedPath, fullNameWithExtension));
+                string packedPath = Path.Combine(outputPackedPath, fullNameWithExtension);
                 string packedDirectoryName = Path.GetDirectoryName(packedPath);
                 if (!Directory.Exists(packedDirectoryName))
                 {
@@ -1085,8 +1090,8 @@ namespace Framework.Editor
             // Full Binary
             if (OutputFullSelected)
             {
-                string fullNameWithCrc32 = variant != null ? Utility.Text.Format("{0}.{1}.{2:x8}.{3}", name, variant, hashCode, DefaultExtension) : Utility.Text.Format("{0}.{1:x8}.{2}", name, hashCode, DefaultExtension);
-                string fullPath = Utility.Path.GetRegularPath(Path.Combine(outputFullPath, fullNameWithCrc32));
+                string fullNameWithCrc32 = variant != null ? string.Format("{0}.{1}.{2:x8}.{3}", name, variant, hashCode, DefaultExtension) : string.Format("{0}.{1:x8}.{2}", name, hashCode, DefaultExtension);
+                string fullPath = Path.Combine(outputFullPath, fullNameWithCrc32);
                 string fullDirectoryName = Path.GetDirectoryName(fullPath);
                 if (!Directory.Exists(fullDirectoryName))
                 {
@@ -1095,9 +1100,9 @@ namespace Framework.Editor
         
                 if (zip)
                 {
-                    byte[] zipBytes = Utility.Zip.Compress(bytes);
+                    byte[] zipBytes = Zip.Compress(bytes);
                     zipLength = zipBytes.Length;
-                    zipHashCode = Utility.Verifier.GetCrc32(zipBytes);
+                    zipHashCode = Verifier.GetCrc32(zipBytes);
                     File.WriteAllBytes(fullPath, zipBytes);
                 }
                 else
@@ -1109,131 +1114,131 @@ namespace Framework.Editor
             resourceData.AddCode(platform, length, hashCode, zipLength, zipHashCode);
         }
         
-        private void ProcessPackageVersionList(string outputPackagePath, Platform platform)
-        {
-            Asset[] originalAssets = m_ResourceCollection.GetAssets();
-            PackageVersionList.Asset[] assets = new PackageVersionList.Asset[originalAssets.Length];
-            for (int i = 0; i < originalAssets.Length; i++)
-            {
-                Asset originalAsset = originalAssets[i];
-                assets[i] = new PackageVersionList.Asset(originalAsset.Name, GetDependencyAssetIndexes(originalAsset.Name));
-            }
-        
-            int index = 0;
-            PackageVersionList.Resource[] resources = new PackageVersionList.Resource[m_ResourceCollection.ResourceCount];
-            foreach (ResourceData resourceData in m_ResourceDatas.Values)
-            {
-                ResourceCode resourceCode = resourceData.GetCode(platform);
-                resources[index++] = new PackageVersionList.Resource(resourceData.Name, resourceData.Variant, GetExtension(resourceData), (byte)resourceData.LoadType, resourceCode.Length, resourceCode.HashCode, GetAssetIndexes(resourceData));
-            }
-        
-            string[] originalResourceGroup = GetResourceGroups();
-            PackageVersionList.ResourceGroup[] resourceGroups = new PackageVersionList.ResourceGroup[originalResourceGroup.Length];
-            for (int i = 0; i < originalResourceGroup.Length; i++)
-            {
-                resourceGroups[i] = new PackageVersionList.ResourceGroup(originalResourceGroup[i], GetResourceIndexes(originalResourceGroup[i]));
-            }
-        
-            PackageVersionList versionList = new PackageVersionList(ApplicableGameVersion, InternalResourceVersion, assets, resources, resourceGroups);
-            PackageVersionListSerializer serializer = new PackageVersionListSerializer();
-            serializer.RegisterSerializeCallback(0, BuiltinVersionListSerializer.SerializePackageVersionListCallback_V0);
-            serializer.RegisterSerializeCallback(1, BuiltinVersionListSerializer.SerializePackageVersionListCallback_V1);
-            string packageVersionListPath = Utility.Path.GetRegularPath(Path.Combine(outputPackagePath, RemoteVersionListFileName));
-            using (FileStream fileStream = new FileStream(packageVersionListPath, FileMode.CreateNew, FileAccess.Write))
-            {
-                if (!serializer.Serialize(fileStream, versionList))
-                {
-                    throw new GameFrameworkException("Serialize package version list failure.");
-                }
-            }
-        }
-        
-        private VersionListData ProcessUpdatableVersionList(string outputFullPath, Platform platform)
-        {
-            Asset[] originalAssets = m_ResourceCollection.GetAssets();
-            UpdatableVersionList.Asset[] assets = new UpdatableVersionList.Asset[originalAssets.Length];
-            for (int i = 0; i < originalAssets.Length; i++)
-            {
-                Asset originalAsset = originalAssets[i];
-                assets[i] = new UpdatableVersionList.Asset(originalAsset.Name, GetDependencyAssetIndexes(originalAsset.Name));
-            }
-        
-            int index = 0;
-            UpdatableVersionList.Resource[] resources = new UpdatableVersionList.Resource[m_ResourceCollection.ResourceCount];
-            foreach (ResourceData resourceData in m_ResourceDatas.Values)
-            {
-                ResourceCode resourceCode = resourceData.GetCode(platform);
-                resources[index++] = new UpdatableVersionList.Resource(resourceData.Name, resourceData.Variant, GetExtension(resourceData), (byte)resourceData.LoadType, resourceCode.Length, resourceCode.HashCode, resourceCode.ZipLength, resourceCode.ZipHashCode, GetAssetIndexes(resourceData));
-            }
-        
-            string[] originalResourceGroup = GetResourceGroups();
-            UpdatableVersionList.ResourceGroup[] resourceGroups = new UpdatableVersionList.ResourceGroup[originalResourceGroup.Length];
-            for (int i = 0; i < originalResourceGroup.Length; i++)
-            {
-                resourceGroups[i] = new UpdatableVersionList.ResourceGroup(originalResourceGroup[i], GetResourceIndexes(originalResourceGroup[i]));
-            }
-        
-            UpdatableVersionList versionList = new UpdatableVersionList(ApplicableGameVersion, InternalResourceVersion, assets, resources, resourceGroups);
-            UpdatableVersionListSerializer serializer = new UpdatableVersionListSerializer();
-            serializer.RegisterSerializeCallback(0, BuiltinVersionListSerializer.SerializeUpdatableVersionListCallback_V0);
-            serializer.RegisterSerializeCallback(1, BuiltinVersionListSerializer.SerializeUpdatableVersionListCallback_V1);
-            string updatableVersionListPath = Utility.Path.GetRegularPath(Path.Combine(outputFullPath, RemoteVersionListFileName));
-            using (FileStream fileStream = new FileStream(updatableVersionListPath, FileMode.CreateNew, FileAccess.Write))
-            {
-                if (!serializer.Serialize(fileStream, versionList))
-                {
-                    throw new GameFrameworkException("Serialize updatable version list failure.");
-                }
-            }
-        
-            byte[] bytes = File.ReadAllBytes(updatableVersionListPath);
-            int length = bytes.Length;
-            int hashCode = Utility.Verifier.GetCrc32(bytes);
-            bytes = Utility.Zip.Compress(bytes);
-            int zipLength = bytes.Length;
-            File.WriteAllBytes(updatableVersionListPath, bytes);
-            int zipHashCode = Utility.Verifier.GetCrc32(bytes);
-            int dotPosition = RemoteVersionListFileName.LastIndexOf('.');
-            string versionListFullNameWithCrc32 = Utility.Text.Format("{0}.{2:x8}.{1}", RemoteVersionListFileName.Substring(0, dotPosition), RemoteVersionListFileName.Substring(dotPosition + 1), hashCode);
-            string updatableVersionListPathWithCrc32 = Utility.Path.GetRegularPath(Path.Combine(outputFullPath, versionListFullNameWithCrc32));
-            File.Move(updatableVersionListPath, updatableVersionListPathWithCrc32);
-        
-            return new VersionListData(updatableVersionListPathWithCrc32, length, hashCode, zipLength, zipHashCode);
-        }
+        //private void ProcessPackageVersionList(string outputPackagePath, Platform platform)
+        //{
+        //    Asset[] originalAssets = m_ResourceCollection.GetAssets();
+        //    PackageVersionList.Asset[] assets = new PackageVersionList.Asset[originalAssets.Length];
+        //    for (int i = 0; i < originalAssets.Length; i++)
+        //    {
+        //        Asset originalAsset = originalAssets[i];
+        //        assets[i] = new PackageVersionList.Asset(originalAsset.Name, GetDependencyAssetIndexes(originalAsset.Name));
+        //    }
+        //
+        //    int index = 0;
+        //    PackageVersionList.Resource[] resources = new PackageVersionList.Resource[m_ResourceCollection.ResourceCount];
+        //    foreach (ResourceData resourceData in m_ResourceDatas.Values)
+        //    {
+        //        ResourceCode resourceCode = resourceData.GetCode(platform);
+        //        resources[index++] = new PackageVersionList.Resource(resourceData.Name, resourceData.Variant, GetExtension(resourceData), (byte)resourceData.LoadType, resourceCode.Length, resourceCode.HashCode, GetAssetIndexes(resourceData));
+        //    }
+        //
+        //    string[] originalResourceGroup = GetResourceGroups();
+        //    PackageVersionList.ResourceGroup[] resourceGroups = new PackageVersionList.ResourceGroup[originalResourceGroup.Length];
+        //    for (int i = 0; i < originalResourceGroup.Length; i++)
+        //    {
+        //        resourceGroups[i] = new PackageVersionList.ResourceGroup(originalResourceGroup[i], GetResourceIndexes(originalResourceGroup[i]));
+        //    }
+        //
+        //    PackageVersionList versionList = new PackageVersionList(ApplicableGameVersion, InternalResourceVersion, assets, resources, resourceGroups);
+        //    PackageVersionListSerializer serializer = new PackageVersionListSerializer();
+        //    serializer.RegisterSerializeCallback(0, BuiltinVersionListSerializer.SerializePackageVersionListCallback_V0);
+        //    serializer.RegisterSerializeCallback(1, BuiltinVersionListSerializer.SerializePackageVersionListCallback_V1);
+        //    string packageVersionListPath = Path.Combine(outputPackagePath, RemoteVersionListFileName);
+        //    using (FileStream fileStream = new FileStream(packageVersionListPath, FileMode.CreateNew, FileAccess.Write))
+        //    {
+        //        if (!serializer.Serialize(fileStream, versionList))
+        //        {
+        //            Debug.LogError("Serialize package version list failure.");
+        //        }
+        //    }
+        //}
+        //
+        //private VersionListData ProcessUpdatableVersionList(string outputFullPath, Platform platform)
+        //{
+        //    Asset[] originalAssets = m_ResourceCollection.GetAssets();
+        //    UpdatableVersionList.Asset[] assets = new UpdatableVersionList.Asset[originalAssets.Length];
+        //    for (int i = 0; i < originalAssets.Length; i++)
+        //    {
+        //        Asset originalAsset = originalAssets[i];
+        //        assets[i] = new UpdatableVersionList.Asset(originalAsset.Name, GetDependencyAssetIndexes(originalAsset.Name));
+        //    }
+        //
+        //    int index = 0;
+        //    UpdatableVersionList.Resource[] resources = new UpdatableVersionList.Resource[m_ResourceCollection.ResourceCount];
+        //    foreach (ResourceData resourceData in m_ResourceDatas.Values)
+        //    {
+        //        ResourceCode resourceCode = resourceData.GetCode(platform);
+        //        resources[index++] = new UpdatableVersionList.Resource(resourceData.Name, resourceData.Variant, GetExtension(resourceData), (byte)resourceData.LoadType, resourceCode.Length, resourceCode.HashCode, resourceCode.ZipLength, resourceCode.ZipHashCode, GetAssetIndexes(resourceData));
+        //    }
+        //
+        //    string[] originalResourceGroup = GetResourceGroups();
+        //    UpdatableVersionList.ResourceGroup[] resourceGroups = new UpdatableVersionList.ResourceGroup[originalResourceGroup.Length];
+        //    for (int i = 0; i < originalResourceGroup.Length; i++)
+        //    {
+        //        resourceGroups[i] = new UpdatableVersionList.ResourceGroup(originalResourceGroup[i], GetResourceIndexes(originalResourceGroup[i]));
+        //    }
+        //
+        //    UpdatableVersionList versionList = new UpdatableVersionList(ApplicableGameVersion, InternalResourceVersion, assets, resources, resourceGroups);
+        //    UpdatableVersionListSerializer serializer = new UpdatableVersionListSerializer();
+        //    serializer.RegisterSerializeCallback(0, BuiltinVersionListSerializer.SerializeUpdatableVersionListCallback_V0);
+        //    serializer.RegisterSerializeCallback(1, BuiltinVersionListSerializer.SerializeUpdatableVersionListCallback_V1);
+        //    string updatableVersionListPath = Path.Combine(outputFullPath, RemoteVersionListFileName);
+        //    using (FileStream fileStream = new FileStream(updatableVersionListPath, FileMode.CreateNew, FileAccess.Write))
+        //    {
+        //        if (!serializer.Serialize(fileStream, versionList))
+        //        {
+        //            Debug.LogError("Serialize updatable version list failure.");
+        //        }
+        //    }
+        //
+        //    byte[] bytes = File.ReadAllBytes(updatableVersionListPath);
+        //    int length = bytes.Length;
+        //    int hashCode = Verifier.GetCrc32(bytes);
+        //    bytes = Zip.Compress(bytes);
+        //    int zipLength = bytes.Length;
+        //    File.WriteAllBytes(updatableVersionListPath, bytes);
+        //    int zipHashCode = Verifier.GetCrc32(bytes);
+        //    int dotPosition = RemoteVersionListFileName.LastIndexOf('.');
+        //    string versionListFullNameWithCrc32 = string.Format("{0}.{2:x8}.{1}", RemoteVersionListFileName.Substring(0, dotPosition), RemoteVersionListFileName.Substring(dotPosition + 1), hashCode);
+        //    string updatableVersionListPathWithCrc32 = Path.Combine(outputFullPath, versionListFullNameWithCrc32);
+        //    File.Move(updatableVersionListPath, updatableVersionListPathWithCrc32);
+        //
+        //    return new VersionListData(updatableVersionListPathWithCrc32, length, hashCode, zipLength, zipHashCode);
+        //}
         
         private void ProcessReadOnlyVersionList(string outputPackedPath, Platform platform)
         {
-            List<ResourceData> packedResourceDatas = new List<ResourceData>();
-            foreach (ResourceData resourceData in m_ResourceDatas.Values)
-            {
-                if (!resourceData.Packed)
-                {
-                    continue;
-                }
-        
-                packedResourceDatas.Add(resourceData);
-            }
-        
-            LocalVersionList.Resource[] resources = new LocalVersionList.Resource[packedResourceDatas.Count];
-            for (int i = 0; i < packedResourceDatas.Count; i++)
-            {
-                ResourceData resourceData = packedResourceDatas[i];
-                ResourceCode resourceCode = resourceData.GetCode(platform);
-                resources[i] = new LocalVersionList.Resource(resourceData.Name, resourceData.Variant, GetExtension(resourceData), (byte)resourceData.LoadType, resourceCode.Length, resourceCode.HashCode);
-            }
-        
-            LocalVersionList versionList = new LocalVersionList(resources);
-            ReadOnlyVersionListSerializer serializer = new ReadOnlyVersionListSerializer();
-            serializer.RegisterSerializeCallback(0, BuiltinVersionListSerializer.SerializeLocalVersionListCallback_V0);
-            serializer.RegisterSerializeCallback(1, BuiltinVersionListSerializer.SerializeLocalVersionListCallback_V1);
-            string readOnlyVersionListPath = Utility.Path.GetRegularPath(Path.Combine(outputPackedPath, LocalVersionListFileName));
-            using (FileStream fileStream = new FileStream(readOnlyVersionListPath, FileMode.CreateNew, FileAccess.Write))
-            {
-                if (!serializer.Serialize(fileStream, versionList))
-                {
-                    throw new GameFrameworkException("Serialize read only version list failure.");
-                }
-            }
+            //List<ResourceData> packedResourceDatas = new List<ResourceData>();
+            //foreach (ResourceData resourceData in m_ResourceDatas.Values)
+            //{
+            //    if (!resourceData.Packed)
+            //    {
+            //        continue;
+            //    }
+            //
+            //    packedResourceDatas.Add(resourceData);
+            //}
+            //
+            //LocalVersionList.Resource[] resources = new LocalVersionList.Resource[packedResourceDatas.Count];
+            //for (int i = 0; i < packedResourceDatas.Count; i++)
+            //{
+            //    ResourceData resourceData = packedResourceDatas[i];
+            //    ResourceCode resourceCode = resourceData.GetCode(platform);
+            //    resources[i] = new LocalVersionList.Resource(resourceData.Name, resourceData.Variant, GetExtension(resourceData), (byte)resourceData.LoadType, resourceCode.Length, resourceCode.HashCode);
+            //}
+            //
+            //LocalVersionList versionList = new LocalVersionList(resources);
+            //ReadOnlyVersionListSerializer serializer = new ReadOnlyVersionListSerializer();
+            //serializer.RegisterSerializeCallback(0, BuiltinVersionListSerializer.SerializeLocalVersionListCallback_V0);
+            //serializer.RegisterSerializeCallback(1, BuiltinVersionListSerializer.SerializeLocalVersionListCallback_V1);
+            //string readOnlyVersionListPath = Path.Combine(outputPackedPath, LocalVersionListFileName);
+            //using (FileStream fileStream = new FileStream(readOnlyVersionListPath, FileMode.CreateNew, FileAccess.Write))
+            //{
+            //    if (!serializer.Serialize(fileStream, versionList))
+            //    {
+            //        Debug.LogError("Serialize read only version list failure.");
+            //    }
+            //}
         }
         
         private int[] GetDependencyAssetIndexes(string assetName)
@@ -1320,36 +1325,50 @@ namespace Framework.Editor
         {
             BuildAssetBundleOptions buildOptions = BuildAssetBundleOptions.None;
         
+            //摘要：
+            //对ab不进行数据压缩，输入的ab包会很大，不过输入和输出会很快
             if (UncompressedAssetBundleSelected)
             {
                 buildOptions |= BuildAssetBundleOptions.UncompressedAssetBundle;
             }
-        
+
+            //摘要：
+            //不包含类型信息。发布web平台时，不能使用该选项
             if (DisableWriteTypeTreeSelected)
             {
                 buildOptions |= BuildAssetBundleOptions.DisableWriteTypeTree;
             }
-        
+
+            //摘要：
+            //使每个object具有唯一不变的hashID, 可用于增量式发布AssetBundle
             if (DeterministicAssetBundleSelected)
             {
                 buildOptions |= BuildAssetBundleOptions.DeterministicAssetBundle;
             }
-        
+
+            //摘要：
+            //强制重新build所有ab
             if (ForceRebuildAssetBundleSelected)
             {
                 buildOptions |= BuildAssetBundleOptions.ForceRebuildAssetBundle;
             }
-        
+
+            //摘要：
+            //忽略typetree的变化，不能与DisableWriteTypeTree同时使用
             if (IgnoreTypeTreeChangesSelected)
             {
                 buildOptions |= BuildAssetBundleOptions.IgnoreTypeTreeChanges;
             }
-        
+
+            //摘要：
+            //附加hash到assetbundle名字中
             if (AppendHashToAssetBundleNameSelected)
             {
                 buildOptions |= BuildAssetBundleOptions.AppendHashToAssetBundleName;
             }
-        
+
+            //摘要：
+            //使用lz4的格式压缩ab,ab会在加载资源时才进行解压。默认的压缩格式是lzma,它会使用ab在下立即解压。
             if (ChunkBasedCompressionSelected)
             {
                 buildOptions |= BuildAssetBundleOptions.ChunkBasedCompression;
@@ -1376,19 +1395,19 @@ namespace Framework.Editor
                 string assetName = asset.Name;
                 if (string.IsNullOrEmpty(assetName))
                 {
-                    m_BuildReport.LogError("Can not find asset by guid '{0}'.", asset.Guid);
+                    //m_BuildReport.LogError("Can not find asset by guid '{0}'.", asset.Guid);
                     return false;
                 }
         
                 string assetFileFullName = Application.dataPath.Substring(0, Application.dataPath.Length - AssetsStringLength) + assetName;
                 if (!File.Exists(assetFileFullName))
                 {
-                    m_BuildReport.LogError("Can not find asset '{0}'.", assetFileFullName);
+                    //m_BuildReport.LogError("Can not find asset '{0}'.", assetFileFullName);
                     return false;
                 }
         
                 byte[] assetBytes = File.ReadAllBytes(assetFileFullName);
-                int assetHashCode = Utility.Verifier.GetCrc32(assetBytes);
+                int assetHashCode = Verifier.GetCrc32(assetBytes);
         
                 List<string> dependencyAssetNames = new List<string>();
                 DependencyData dependencyData = m_ResourceAnalyzerController.GetDependencyData(assetName);
@@ -1407,7 +1426,7 @@ namespace Framework.Editor
             {
                 if (resourceData.AssetCount <= 0)
                 {
-                    m_BuildReport.LogError("Resource '{0}' has no asset.", GetResourceFullName(resourceData.Name, resourceData.Variant));
+                    //m_BuildReport.LogError("Resource '{0}' has no asset.", GetResourceFullName(resourceData.Name, resourceData.Variant));
                     return false;
                 }
             }
@@ -1440,7 +1459,7 @@ namespace Framework.Editor
         
         private string GetResourceFullName(string name, string variant)
         {
-            return !string.IsNullOrEmpty(variant) ? Utility.Text.Format("{0}.{1}", name, variant) : name;
+            return !string.IsNullOrEmpty(variant) ? string.Format("{0}.{1}", name, variant) : name;
         }
         
         private BuildTarget GetBuildTarget(Platform platform)
@@ -1475,7 +1494,8 @@ namespace Framework.Editor
                     return BuildTarget.WebGL;
         
                 default:
-                    throw new GameFrameworkException("Platform is invalid.");
+                    Debug.LogError("Platform is invalid.");
+                    return BuildTarget.NoTarget;
             }
         }
         
