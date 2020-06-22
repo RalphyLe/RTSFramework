@@ -587,916 +587,916 @@ namespace Framework.Editor
             return retVal;
         }
 
-        //public bool BuildResources()
-        //{
-        //    if (!IsValidOutputDirectory)
-        //    {
-        //        return false;
-        //    }
-        //
-        //    Utility.Zip.SetZipHelper(new DefaultZipHelper());
-        //
-        //    if (Directory.Exists(OutputPackagePath))
-        //    {
-        //        Directory.Delete(OutputPackagePath, true);
-        //    }
-        //
-        //    Directory.CreateDirectory(OutputPackagePath);
-        //
-        //    if (Directory.Exists(OutputFullPath))
-        //    {
-        //        Directory.Delete(OutputFullPath, true);
-        //    }
-        //
-        //    Directory.CreateDirectory(OutputFullPath);
-        //
-        //    if (Directory.Exists(OutputPackedPath))
-        //    {
-        //        Directory.Delete(OutputPackedPath, true);
-        //    }
-        //
-        //    Directory.CreateDirectory(OutputPackedPath);
-        //
-        //    if (Directory.Exists(BuildReportPath))
-        //    {
-        //        Directory.Delete(BuildReportPath, true);
-        //    }
-        //
-        //    Directory.CreateDirectory(BuildReportPath);
-        //
-        //    BuildAssetBundleOptions buildAssetBundleOptions = GetBuildAssetBundleOptions();
-        //    m_BuildReport.Initialize(BuildReportPath, ProductName, CompanyName, GameIdentifier, GameFrameworkVersion, UnityVersion, ApplicableGameVersion, InternalResourceVersion,
-        //        Platforms, ZipSelected, (int)buildAssetBundleOptions, m_ResourceDatas);
-        //
-        //    try
-        //    {
-        //        m_BuildReport.LogInfo("Build Start Time: {0}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
-        //
-        //        if (m_BuildEventHandler != null)
-        //        {
-        //            m_BuildReport.LogInfo("Execute build event handler 'PreprocessAllPlatforms'...");
-        //            m_BuildEventHandler.PreprocessAllPlatforms(ProductName, CompanyName, GameIdentifier, GameFrameworkVersion, UnityVersion, ApplicableGameVersion, InternalResourceVersion, buildAssetBundleOptions, ZipSelected, OutputDirectory, WorkingPath, OutputPackageSelected, OutputPackagePath, OutputFullSelected, OutputFullPath, OutputPackedSelected, OutputPackedPath, BuildReportPath);
-        //        }
-        //
-        //        m_BuildReport.LogInfo("Start prepare resource collection...");
-        //        if (!m_ResourceCollection.Load())
-        //        {
-        //            m_BuildReport.LogError("Can not parse 'ResourceCollection.xml', please use 'Resource Editor' tool first.");
-        //
-        //            if (m_BuildEventHandler != null)
-        //            {
-        //                m_BuildReport.LogInfo("Execute build event handler 'PostprocessAllPlatforms'...");
-        //                m_BuildEventHandler.PostprocessAllPlatforms(ProductName, CompanyName, GameIdentifier, GameFrameworkVersion, UnityVersion, ApplicableGameVersion, InternalResourceVersion, buildAssetBundleOptions, ZipSelected, OutputDirectory, WorkingPath, OutputPackageSelected, OutputPackagePath, OutputFullSelected, OutputFullPath, OutputPackedSelected, OutputPackedPath, BuildReportPath);
-        //            }
-        //
-        //            m_BuildReport.SaveReport();
-        //            return false;
-        //        }
-        //
-        //        if (Platforms == Platform.Undefined)
-        //        {
-        //            m_BuildReport.LogError("Platform undefined.");
-        //
-        //            if (m_BuildEventHandler != null)
-        //            {
-        //                m_BuildReport.LogInfo("Execute build event handler 'PostprocessAllPlatforms'...");
-        //                m_BuildEventHandler.PostprocessAllPlatforms(ProductName, CompanyName, GameIdentifier, GameFrameworkVersion, UnityVersion, ApplicableGameVersion, InternalResourceVersion, buildAssetBundleOptions, ZipSelected, OutputDirectory, WorkingPath, OutputPackageSelected, OutputPackagePath, OutputFullSelected, OutputFullPath, OutputPackedSelected, OutputPackedPath, BuildReportPath);
-        //            }
-        //
-        //            m_BuildReport.SaveReport();
-        //            return false;
-        //        }
-        //
-        //        m_BuildReport.LogInfo("Prepare resource collection complete.");
-        //        m_BuildReport.LogInfo("Start analyze assets dependency...");
-        //
-        //        m_ResourceAnalyzerController.Analyze();
-        //
-        //        m_BuildReport.LogInfo("Analyze assets dependency complete.");
-        //        m_BuildReport.LogInfo("Start prepare build map...");
-        //
-        //        AssetBundleBuild[] assetBundleBuildMap = null;
-        //        BinaryBuild[] binaryBuildMap = null;
-        //        if (!GetResourceBuildMap(out assetBundleBuildMap, out binaryBuildMap))
-        //        {
-        //            m_BuildReport.LogError("Get resource build map failure.");
-        //
-        //            if (m_BuildEventHandler != null)
-        //            {
-        //                m_BuildReport.LogInfo("Execute build event handler 'PostprocessAllPlatforms'...");
-        //                m_BuildEventHandler.PostprocessAllPlatforms(ProductName, CompanyName, GameIdentifier, GameFrameworkVersion, UnityVersion, ApplicableGameVersion, InternalResourceVersion, buildAssetBundleOptions, ZipSelected, OutputDirectory, WorkingPath, OutputPackageSelected, OutputPackagePath, OutputFullSelected, OutputFullPath, OutputPackedSelected, OutputPackedPath, BuildReportPath);
-        //            }
-        //
-        //            m_BuildReport.SaveReport();
-        //            return false;
-        //        }
-        //
-        //        m_BuildReport.LogInfo("Prepare resource build map complete.");
-        //        m_BuildReport.LogInfo("Start build resources for selected platforms...");
-        //
-        //        bool watchResult = m_BuildEventHandler == null || !m_BuildEventHandler.ContinueOnFailure;
-        //        bool isSuccess = false;
-        //        isSuccess = BuildResources(Platform.Windows, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
-        //
-        //        if (!watchResult || isSuccess)
-        //        {
-        //            isSuccess = BuildResources(Platform.Windows64, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
-        //        }
-        //
-        //        if (!watchResult || isSuccess)
-        //        {
-        //            isSuccess = BuildResources(Platform.MacOS, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
-        //        }
-        //
-        //        if (!watchResult || isSuccess)
-        //        {
-        //            isSuccess = BuildResources(Platform.Linux, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
-        //        }
-        //
-        //        if (!watchResult || isSuccess)
-        //        {
-        //            isSuccess = BuildResources(Platform.IOS, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
-        //        }
-        //
-        //        if (!watchResult || isSuccess)
-        //        {
-        //            isSuccess = BuildResources(Platform.Android, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
-        //        }
-        //
-        //        if (!watchResult || isSuccess)
-        //        {
-        //            isSuccess = BuildResources(Platform.WindowsStore, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
-        //        }
-        //
-        //        if (!watchResult || isSuccess)
-        //        {
-        //            isSuccess = BuildResources(Platform.WebGL, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
-        //        }
-        //
-        //        if (m_BuildEventHandler != null)
-        //        {
-        //            m_BuildReport.LogInfo("Execute build event handler 'PostprocessAllPlatforms'...");
-        //            m_BuildEventHandler.PostprocessAllPlatforms(ProductName, CompanyName, GameIdentifier, GameFrameworkVersion, UnityVersion, ApplicableGameVersion, InternalResourceVersion, buildAssetBundleOptions, ZipSelected, OutputDirectory, WorkingPath, OutputPackageSelected, OutputPackagePath, OutputFullSelected, OutputFullPath, OutputPackedSelected, OutputPackedPath, BuildReportPath);
-        //        }
-        //
-        //        m_BuildReport.LogInfo("Build resources for selected platforms complete.");
-        //        m_BuildReport.SaveReport();
-        //        return true;
-        //    }
-        //    catch (Exception exception)
-        //    {
-        //        string errorMessage = exception.ToString();
-        //        m_BuildReport.LogFatal(errorMessage);
-        //        m_BuildReport.SaveReport();
-        //        if (BuildResourceError != null)
-        //        {
-        //            BuildResourceError(errorMessage);
-        //        }
-        //
-        //        return false;
-        //    }
-        //}
-        //
-        //private bool BuildResources(Platform platform, AssetBundleBuild[] assetBundleBuildMap, BuildAssetBundleOptions buildAssetBundleOptions, BinaryBuild[] binaryBuildMap)
-        //{
-        //    if (!IsPlatformSelected(platform))
-        //    {
-        //        return true;
-        //    }
-        //
-        //    string platformName = platform.ToString();
-        //    m_BuildReport.LogInfo("Start build resources for '{0}'...", platformName);
-        //
-        //    string workingPath = Utility.Text.Format("{0}{1}/", WorkingPath, platformName);
-        //    m_BuildReport.LogInfo("Working path is '{0}'.", workingPath);
-        //
-        //    string outputPackagePath = Utility.Text.Format("{0}{1}/", OutputPackagePath, platformName);
-        //    if (OutputPackageSelected)
-        //    {
-        //        Directory.CreateDirectory(outputPackagePath);
-        //        m_BuildReport.LogInfo("Output package is selected, path is '{0}'.", outputPackagePath);
-        //    }
-        //    else
-        //    {
-        //        m_BuildReport.LogInfo("Output package is not selected.");
-        //    }
-        //
-        //    string outputFullPath = Utility.Text.Format("{0}{1}/", OutputFullPath, platformName);
-        //    if (OutputFullSelected)
-        //    {
-        //        Directory.CreateDirectory(outputFullPath);
-        //        m_BuildReport.LogInfo("Output full is selected, path is '{0}'.", outputFullPath);
-        //    }
-        //    else
-        //    {
-        //        m_BuildReport.LogInfo("Output full is not selected.");
-        //    }
-        //
-        //    string outputPackedPath = Utility.Text.Format("{0}{1}/", OutputPackedPath, platformName);
-        //    if (OutputPackedSelected)
-        //    {
-        //        Directory.CreateDirectory(outputPackedPath);
-        //        m_BuildReport.LogInfo("Output packed is selected, path is '{0}'.", outputPackedPath);
-        //    }
-        //    else
-        //    {
-        //        m_BuildReport.LogInfo("Output packed is not selected.");
-        //    }
-        //
-        //    // Clean working path
-        //    List<string> validNames = new List<string>();
-        //    foreach (AssetBundleBuild i in assetBundleBuildMap)
-        //    {
-        //        validNames.Add(GetResourceFullName(i.assetBundleName, i.assetBundleVariant).ToLower());
-        //    }
-        //
-        //    if (Directory.Exists(workingPath))
-        //    {
-        //        Uri workingUri = new Uri(workingPath, UriKind.Absolute);
-        //        string[] fileNames = Directory.GetFiles(workingPath, "*", SearchOption.AllDirectories);
-        //        foreach (string fileName in fileNames)
-        //        {
-        //            if (fileName.EndsWith(".manifest"))
-        //            {
-        //                continue;
-        //            }
-        //
-        //            string relativeName = workingUri.MakeRelativeUri(new Uri(fileName, UriKind.Absolute)).ToString();
-        //            if (!validNames.Contains(relativeName))
-        //            {
-        //                File.Delete(fileName);
-        //            }
-        //        }
-        //
-        //        string[] manifestNames = Directory.GetFiles(workingPath, "*.manifest", SearchOption.AllDirectories);
-        //        foreach (string manifestName in manifestNames)
-        //        {
-        //            if (!File.Exists(manifestName.Substring(0, manifestName.LastIndexOf('.'))))
-        //            {
-        //                File.Delete(manifestName);
-        //            }
-        //        }
-        //
-        //        Utility.Path.RemoveEmptyDirectory(workingPath);
-        //    }
-        //
-        //    if (!Directory.Exists(workingPath))
-        //    {
-        //        Directory.CreateDirectory(workingPath);
-        //    }
-        //
-        //    if (m_BuildEventHandler != null)
-        //    {
-        //        m_BuildReport.LogInfo("Execute build event handler 'PreprocessPlatform' for '{0}'...", platformName);
-        //        m_BuildEventHandler.PreprocessPlatform(platform, workingPath, OutputPackageSelected, outputPackagePath, OutputFullSelected, outputFullPath, OutputPackedSelected, outputPackedPath);
-        //    }
-        //
-        //    // Build AssetBundles
-        //    m_BuildReport.LogInfo("Unity start build asset bundles for '{0}'...", platformName);
-        //    AssetBundleManifest assetBundleManifest = BuildPipeline.BuildAssetBundles(workingPath, assetBundleBuildMap, buildAssetBundleOptions, GetBuildTarget(platform));
-        //    if (assetBundleManifest == null)
-        //    {
-        //        m_BuildReport.LogError("Build asset bundles for '{0}' failure.", platformName);
-        //
-        //        if (m_BuildEventHandler != null)
-        //        {
-        //            m_BuildReport.LogInfo("Execute build event handler 'PostprocessPlatform' for '{0}'...", platformName);
-        //            m_BuildEventHandler.PostprocessPlatform(platform, workingPath, OutputPackageSelected, outputPackagePath, OutputFullSelected, outputFullPath, OutputPackedSelected, outputPackedPath, false);
-        //        }
-        //
-        //        return false;
-        //    }
-        //
-        //    m_BuildReport.LogInfo("Unity build asset bundles for '{0}' complete.", platformName);
-        //
-        //    // Process AssetBundles
-        //    for (int i = 0; i < assetBundleBuildMap.Length; i++)
-        //    {
-        //        string fullName = GetResourceFullName(assetBundleBuildMap[i].assetBundleName, assetBundleBuildMap[i].assetBundleVariant);
-        //        if (ProcessingAssetBundle != null)
-        //        {
-        //            if (ProcessingAssetBundle(fullName, (float)(i + 1) / assetBundleBuildMap.Length))
-        //            {
-        //                m_BuildReport.LogWarning("The build has been canceled by user.");
-        //
-        //                if (m_BuildEventHandler != null)
-        //                {
-        //                    m_BuildReport.LogInfo("Execute build event handler 'PostprocessPlatform' for '{0}'...", platformName);
-        //                    m_BuildEventHandler.PostprocessPlatform(platform, workingPath, OutputPackageSelected, outputPackagePath, OutputFullSelected, outputFullPath, OutputPackedSelected, outputPackedPath, false);
-        //                }
-        //
-        //                return false;
-        //            }
-        //        }
-        //
-        //        m_BuildReport.LogInfo("Start process asset bundle '{0}' for '{1}'...", fullName, platformName);
-        //
-        //        ProcessAssetBundle(platform, workingPath, outputPackagePath, outputFullPath, outputPackedPath, ZipSelected, assetBundleBuildMap[i].assetBundleName, assetBundleBuildMap[i].assetBundleVariant);
-        //
-        //        m_BuildReport.LogInfo("Process asset bundle '{0}' for '{1}' complete.", fullName, platformName);
-        //    }
-        //
-        //    // Process Binaries
-        //    for (int i = 0; i < binaryBuildMap.Length; i++)
-        //    {
-        //        string fullName = GetResourceFullName(binaryBuildMap[i].resourceName, binaryBuildMap[i].resourceVariant);
-        //        if (ProcessingBinary != null)
-        //        {
-        //            if (ProcessingBinary(fullName, (float)(i + 1) / binaryBuildMap.Length))
-        //            {
-        //                m_BuildReport.LogWarning("The build has been canceled by user.");
-        //
-        //                if (m_BuildEventHandler != null)
-        //                {
-        //                    m_BuildReport.LogInfo("Execute build event handler 'PostprocessPlatform' for '{0}'...", platformName);
-        //                    m_BuildEventHandler.PostprocessPlatform(platform, workingPath, OutputPackageSelected, outputPackagePath, OutputFullSelected, outputFullPath, OutputPackedSelected, outputPackedPath, false);
-        //                }
-        //
-        //                return false;
-        //            }
-        //        }
-        //
-        //        m_BuildReport.LogInfo("Start process binary '{0}' for '{1}'...", fullName, platformName);
-        //
-        //        ProcessBinary(platform, workingPath, outputPackagePath, outputFullPath, outputPackedPath, ZipSelected, binaryBuildMap[i].resourceName, binaryBuildMap[i].resourceVariant);
-        //
-        //        m_BuildReport.LogInfo("Process binary '{0}' for '{1}' complete.", fullName, platformName);
-        //    }
-        //
-        //    if (OutputPackageSelected)
-        //    {
-        //        ProcessPackageVersionList(outputPackagePath, platform);
-        //        m_BuildReport.LogInfo("Process package version list for '{0}' complete.", platformName);
-        //    }
-        //
-        //    if (OutputFullSelected)
-        //    {
-        //        VersionListData versionListData = ProcessUpdatableVersionList(outputFullPath, platform);
-        //        m_BuildReport.LogInfo("Process updatable version list for '{0}' complete, updatable version list path is '{1}', length is '{2}', hash code is '{3}[0x{3:X8}]', zip length is '{4}', zip hash code is '{5}[0x{5:X8}]'.", platformName, versionListData.Path, versionListData.Length.ToString(), versionListData.HashCode, versionListData.ZipLength.ToString(), versionListData.ZipHashCode);
-        //    }
-        //
-        //    if (OutputPackedSelected)
-        //    {
-        //        ProcessReadOnlyVersionList(outputPackedPath, platform);
-        //        m_BuildReport.LogInfo("Process read only version list for '{0}' complete.", platformName);
-        //    }
-        //
-        //    if (m_BuildEventHandler != null)
-        //    {
-        //        m_BuildReport.LogInfo("Execute build event handler 'PostprocessPlatform' for '{0}'...", platformName);
-        //        m_BuildEventHandler.PostprocessPlatform(platform, workingPath, OutputPackageSelected, outputPackagePath, OutputFullSelected, outputFullPath, OutputPackedSelected, outputPackedPath, true);
-        //    }
-        //
-        //    if (ProcessResourceComplete != null)
-        //    {
-        //        ProcessResourceComplete(platform);
-        //    }
-        //
-        //    m_BuildReport.LogInfo("Build resources for '{0}' success.", platformName);
-        //    return true;
-        //}
-        //
-        //private void ProcessAssetBundle(Platform platform, string workingPath, string outputPackagePath, string outputFullPath, string outputPackedPath, bool zip, string name, string variant)
-        //{
-        //    string fullName = GetResourceFullName(name, variant);
-        //    ResourceData resourceData = m_ResourceDatas[fullName];
-        //    string fullNameWithExtension = Utility.Text.Format("{0}.{1}", fullName, GetExtension(resourceData));
-        //    string workingName = Utility.Path.GetRegularPath(Path.Combine(workingPath, fullName.ToLower()));
-        //
-        //    byte[] bytes = File.ReadAllBytes(workingName);
-        //    int length = bytes.Length;
-        //    int hashCode = Utility.Verifier.GetCrc32(bytes);
-        //    int zipLength = length;
-        //    int zipHashCode = hashCode;
-        //
-        //    byte[] hashBytes = Utility.Converter.GetBytes(hashCode);
-        //    if (resourceData.LoadType == LoadType.LoadFromMemoryAndQuickDecrypt)
-        //    {
-        //        bytes = Utility.Encryption.GetQuickXorBytes(bytes, hashBytes);
-        //    }
-        //    else if (resourceData.LoadType == LoadType.LoadFromMemoryAndDecrypt)
-        //    {
-        //        bytes = Utility.Encryption.GetXorBytes(bytes, hashBytes);
-        //    }
-        //
-        //    // Package AssetBundle
-        //    if (OutputPackageSelected)
-        //    {
-        //        string packagePath = Utility.Path.GetRegularPath(Path.Combine(outputPackagePath, fullNameWithExtension));
-        //        string packageDirectoryName = Path.GetDirectoryName(packagePath);
-        //        if (!Directory.Exists(packageDirectoryName))
-        //        {
-        //            Directory.CreateDirectory(packageDirectoryName);
-        //        }
-        //
-        //        File.WriteAllBytes(packagePath, bytes);
-        //    }
-        //
-        //    // Packed AssetBundle
-        //    if (OutputPackedSelected && resourceData.Packed)
-        //    {
-        //        string packedPath = Utility.Path.GetRegularPath(Path.Combine(outputPackedPath, fullNameWithExtension));
-        //        string packedDirectoryName = Path.GetDirectoryName(packedPath);
-        //        if (!Directory.Exists(packedDirectoryName))
-        //        {
-        //            Directory.CreateDirectory(packedDirectoryName);
-        //        }
-        //
-        //        File.WriteAllBytes(packedPath, bytes);
-        //    }
-        //
-        //    // Full AssetBundle
-        //    if (OutputFullSelected)
-        //    {
-        //        string fullNameWithCrc32 = variant != null ? Utility.Text.Format("{0}.{1}.{2:x8}.{3}", name, variant, hashCode, DefaultExtension) : Utility.Text.Format("{0}.{1:x8}.{2}", name, hashCode, DefaultExtension);
-        //        string fullPath = Utility.Path.GetRegularPath(Path.Combine(outputFullPath, fullNameWithCrc32));
-        //        string fullDirectoryName = Path.GetDirectoryName(fullPath);
-        //        if (!Directory.Exists(fullDirectoryName))
-        //        {
-        //            Directory.CreateDirectory(fullDirectoryName);
-        //        }
-        //
-        //        if (zip)
-        //        {
-        //            byte[] zipBytes = Utility.Zip.Compress(bytes);
-        //            zipLength = zipBytes.Length;
-        //            zipHashCode = Utility.Verifier.GetCrc32(zipBytes);
-        //            File.WriteAllBytes(fullPath, zipBytes);
-        //        }
-        //        else
-        //        {
-        //            File.WriteAllBytes(fullPath, bytes);
-        //        }
-        //    }
-        //
-        //    resourceData.AddCode(platform, length, hashCode, zipLength, zipHashCode);
-        //}
-        //
-        //private void ProcessBinary(Platform platform, string workingPath, string outputPackagePath, string outputFullPath, string outputPackedPath, bool zip, string name, string variant)
-        //{
-        //    string fullName = GetResourceFullName(name, variant);
-        //    ResourceData resourceData = m_ResourceDatas[fullName];
-        //    string fullNameWithExtension = Utility.Text.Format("{0}.{1}", fullName, GetExtension(resourceData));
-        //    string assetName = resourceData.GetAssetNames()[0];
-        //    string assetPath = Utility.Path.GetRegularPath(Application.dataPath.Substring(0, Application.dataPath.Length - AssetsStringLength) + assetName);
-        //
-        //    byte[] bytes = File.ReadAllBytes(assetPath);
-        //    int length = bytes.Length;
-        //    int hashCode = Utility.Verifier.GetCrc32(bytes);
-        //    int zipLength = length;
-        //    int zipHashCode = hashCode;
-        //
-        //    byte[] hashBytes = Utility.Converter.GetBytes(hashCode);
-        //    if (resourceData.LoadType == LoadType.LoadFromBinaryAndQuickDecrypt)
-        //    {
-        //        bytes = Utility.Encryption.GetQuickXorBytes(bytes, hashBytes);
-        //    }
-        //    else if (resourceData.LoadType == LoadType.LoadFromBinaryAndDecrypt)
-        //    {
-        //        bytes = Utility.Encryption.GetXorBytes(bytes, hashBytes);
-        //    }
-        //
-        //    // Package Binary
-        //    if (OutputPackageSelected)
-        //    {
-        //        string packagePath = Utility.Path.GetRegularPath(Path.Combine(outputPackagePath, fullNameWithExtension));
-        //        string packageDirectoryName = Path.GetDirectoryName(packagePath);
-        //        if (!Directory.Exists(packageDirectoryName))
-        //        {
-        //            Directory.CreateDirectory(packageDirectoryName);
-        //        }
-        //
-        //        File.WriteAllBytes(packagePath, bytes);
-        //    }
-        //
-        //    // Packed Binary
-        //    if (OutputPackedSelected && resourceData.Packed)
-        //    {
-        //        string packedPath = Utility.Path.GetRegularPath(Path.Combine(outputPackedPath, fullNameWithExtension));
-        //        string packedDirectoryName = Path.GetDirectoryName(packedPath);
-        //        if (!Directory.Exists(packedDirectoryName))
-        //        {
-        //            Directory.CreateDirectory(packedDirectoryName);
-        //        }
-        //
-        //        File.WriteAllBytes(packedPath, bytes);
-        //    }
-        //
-        //    // Full Binary
-        //    if (OutputFullSelected)
-        //    {
-        //        string fullNameWithCrc32 = variant != null ? Utility.Text.Format("{0}.{1}.{2:x8}.{3}", name, variant, hashCode, DefaultExtension) : Utility.Text.Format("{0}.{1:x8}.{2}", name, hashCode, DefaultExtension);
-        //        string fullPath = Utility.Path.GetRegularPath(Path.Combine(outputFullPath, fullNameWithCrc32));
-        //        string fullDirectoryName = Path.GetDirectoryName(fullPath);
-        //        if (!Directory.Exists(fullDirectoryName))
-        //        {
-        //            Directory.CreateDirectory(fullDirectoryName);
-        //        }
-        //
-        //        if (zip)
-        //        {
-        //            byte[] zipBytes = Utility.Zip.Compress(bytes);
-        //            zipLength = zipBytes.Length;
-        //            zipHashCode = Utility.Verifier.GetCrc32(zipBytes);
-        //            File.WriteAllBytes(fullPath, zipBytes);
-        //        }
-        //        else
-        //        {
-        //            File.WriteAllBytes(fullPath, bytes);
-        //        }
-        //    }
-        //
-        //    resourceData.AddCode(platform, length, hashCode, zipLength, zipHashCode);
-        //}
-        //
-        //private void ProcessPackageVersionList(string outputPackagePath, Platform platform)
-        //{
-        //    Asset[] originalAssets = m_ResourceCollection.GetAssets();
-        //    PackageVersionList.Asset[] assets = new PackageVersionList.Asset[originalAssets.Length];
-        //    for (int i = 0; i < originalAssets.Length; i++)
-        //    {
-        //        Asset originalAsset = originalAssets[i];
-        //        assets[i] = new PackageVersionList.Asset(originalAsset.Name, GetDependencyAssetIndexes(originalAsset.Name));
-        //    }
-        //
-        //    int index = 0;
-        //    PackageVersionList.Resource[] resources = new PackageVersionList.Resource[m_ResourceCollection.ResourceCount];
-        //    foreach (ResourceData resourceData in m_ResourceDatas.Values)
-        //    {
-        //        ResourceCode resourceCode = resourceData.GetCode(platform);
-        //        resources[index++] = new PackageVersionList.Resource(resourceData.Name, resourceData.Variant, GetExtension(resourceData), (byte)resourceData.LoadType, resourceCode.Length, resourceCode.HashCode, GetAssetIndexes(resourceData));
-        //    }
-        //
-        //    string[] originalResourceGroup = GetResourceGroups();
-        //    PackageVersionList.ResourceGroup[] resourceGroups = new PackageVersionList.ResourceGroup[originalResourceGroup.Length];
-        //    for (int i = 0; i < originalResourceGroup.Length; i++)
-        //    {
-        //        resourceGroups[i] = new PackageVersionList.ResourceGroup(originalResourceGroup[i], GetResourceIndexes(originalResourceGroup[i]));
-        //    }
-        //
-        //    PackageVersionList versionList = new PackageVersionList(ApplicableGameVersion, InternalResourceVersion, assets, resources, resourceGroups);
-        //    PackageVersionListSerializer serializer = new PackageVersionListSerializer();
-        //    serializer.RegisterSerializeCallback(0, BuiltinVersionListSerializer.SerializePackageVersionListCallback_V0);
-        //    serializer.RegisterSerializeCallback(1, BuiltinVersionListSerializer.SerializePackageVersionListCallback_V1);
-        //    string packageVersionListPath = Utility.Path.GetRegularPath(Path.Combine(outputPackagePath, RemoteVersionListFileName));
-        //    using (FileStream fileStream = new FileStream(packageVersionListPath, FileMode.CreateNew, FileAccess.Write))
-        //    {
-        //        if (!serializer.Serialize(fileStream, versionList))
-        //        {
-        //            throw new GameFrameworkException("Serialize package version list failure.");
-        //        }
-        //    }
-        //}
-        //
-        //private VersionListData ProcessUpdatableVersionList(string outputFullPath, Platform platform)
-        //{
-        //    Asset[] originalAssets = m_ResourceCollection.GetAssets();
-        //    UpdatableVersionList.Asset[] assets = new UpdatableVersionList.Asset[originalAssets.Length];
-        //    for (int i = 0; i < originalAssets.Length; i++)
-        //    {
-        //        Asset originalAsset = originalAssets[i];
-        //        assets[i] = new UpdatableVersionList.Asset(originalAsset.Name, GetDependencyAssetIndexes(originalAsset.Name));
-        //    }
-        //
-        //    int index = 0;
-        //    UpdatableVersionList.Resource[] resources = new UpdatableVersionList.Resource[m_ResourceCollection.ResourceCount];
-        //    foreach (ResourceData resourceData in m_ResourceDatas.Values)
-        //    {
-        //        ResourceCode resourceCode = resourceData.GetCode(platform);
-        //        resources[index++] = new UpdatableVersionList.Resource(resourceData.Name, resourceData.Variant, GetExtension(resourceData), (byte)resourceData.LoadType, resourceCode.Length, resourceCode.HashCode, resourceCode.ZipLength, resourceCode.ZipHashCode, GetAssetIndexes(resourceData));
-        //    }
-        //
-        //    string[] originalResourceGroup = GetResourceGroups();
-        //    UpdatableVersionList.ResourceGroup[] resourceGroups = new UpdatableVersionList.ResourceGroup[originalResourceGroup.Length];
-        //    for (int i = 0; i < originalResourceGroup.Length; i++)
-        //    {
-        //        resourceGroups[i] = new UpdatableVersionList.ResourceGroup(originalResourceGroup[i], GetResourceIndexes(originalResourceGroup[i]));
-        //    }
-        //
-        //    UpdatableVersionList versionList = new UpdatableVersionList(ApplicableGameVersion, InternalResourceVersion, assets, resources, resourceGroups);
-        //    UpdatableVersionListSerializer serializer = new UpdatableVersionListSerializer();
-        //    serializer.RegisterSerializeCallback(0, BuiltinVersionListSerializer.SerializeUpdatableVersionListCallback_V0);
-        //    serializer.RegisterSerializeCallback(1, BuiltinVersionListSerializer.SerializeUpdatableVersionListCallback_V1);
-        //    string updatableVersionListPath = Utility.Path.GetRegularPath(Path.Combine(outputFullPath, RemoteVersionListFileName));
-        //    using (FileStream fileStream = new FileStream(updatableVersionListPath, FileMode.CreateNew, FileAccess.Write))
-        //    {
-        //        if (!serializer.Serialize(fileStream, versionList))
-        //        {
-        //            throw new GameFrameworkException("Serialize updatable version list failure.");
-        //        }
-        //    }
-        //
-        //    byte[] bytes = File.ReadAllBytes(updatableVersionListPath);
-        //    int length = bytes.Length;
-        //    int hashCode = Utility.Verifier.GetCrc32(bytes);
-        //    bytes = Utility.Zip.Compress(bytes);
-        //    int zipLength = bytes.Length;
-        //    File.WriteAllBytes(updatableVersionListPath, bytes);
-        //    int zipHashCode = Utility.Verifier.GetCrc32(bytes);
-        //    int dotPosition = RemoteVersionListFileName.LastIndexOf('.');
-        //    string versionListFullNameWithCrc32 = Utility.Text.Format("{0}.{2:x8}.{1}", RemoteVersionListFileName.Substring(0, dotPosition), RemoteVersionListFileName.Substring(dotPosition + 1), hashCode);
-        //    string updatableVersionListPathWithCrc32 = Utility.Path.GetRegularPath(Path.Combine(outputFullPath, versionListFullNameWithCrc32));
-        //    File.Move(updatableVersionListPath, updatableVersionListPathWithCrc32);
-        //
-        //    return new VersionListData(updatableVersionListPathWithCrc32, length, hashCode, zipLength, zipHashCode);
-        //}
-        //
-        //private void ProcessReadOnlyVersionList(string outputPackedPath, Platform platform)
-        //{
-        //    List<ResourceData> packedResourceDatas = new List<ResourceData>();
-        //    foreach (ResourceData resourceData in m_ResourceDatas.Values)
-        //    {
-        //        if (!resourceData.Packed)
-        //        {
-        //            continue;
-        //        }
-        //
-        //        packedResourceDatas.Add(resourceData);
-        //    }
-        //
-        //    LocalVersionList.Resource[] resources = new LocalVersionList.Resource[packedResourceDatas.Count];
-        //    for (int i = 0; i < packedResourceDatas.Count; i++)
-        //    {
-        //        ResourceData resourceData = packedResourceDatas[i];
-        //        ResourceCode resourceCode = resourceData.GetCode(platform);
-        //        resources[i] = new LocalVersionList.Resource(resourceData.Name, resourceData.Variant, GetExtension(resourceData), (byte)resourceData.LoadType, resourceCode.Length, resourceCode.HashCode);
-        //    }
-        //
-        //    LocalVersionList versionList = new LocalVersionList(resources);
-        //    ReadOnlyVersionListSerializer serializer = new ReadOnlyVersionListSerializer();
-        //    serializer.RegisterSerializeCallback(0, BuiltinVersionListSerializer.SerializeLocalVersionListCallback_V0);
-        //    serializer.RegisterSerializeCallback(1, BuiltinVersionListSerializer.SerializeLocalVersionListCallback_V1);
-        //    string readOnlyVersionListPath = Utility.Path.GetRegularPath(Path.Combine(outputPackedPath, LocalVersionListFileName));
-        //    using (FileStream fileStream = new FileStream(readOnlyVersionListPath, FileMode.CreateNew, FileAccess.Write))
-        //    {
-        //        if (!serializer.Serialize(fileStream, versionList))
-        //        {
-        //            throw new GameFrameworkException("Serialize read only version list failure.");
-        //        }
-        //    }
-        //}
-        //
-        //private int[] GetDependencyAssetIndexes(string assetName)
-        //{
-        //    List<int> dependencyAssetIndexes = new List<int>();
-        //    Asset[] assets = m_ResourceCollection.GetAssets();
-        //    DependencyData dependencyData = m_ResourceAnalyzerController.GetDependencyData(assetName);
-        //    foreach (Asset dependencyAsset in dependencyData.GetDependencyAssets())
-        //    {
-        //        for (int i = 0; i < assets.Length; i++)
-        //        {
-        //            if (assets[i] == dependencyAsset)
-        //            {
-        //                dependencyAssetIndexes.Add(i);
-        //                break;
-        //            }
-        //        }
-        //    }
-        //
-        //    dependencyAssetIndexes.Sort();
-        //    return dependencyAssetIndexes.ToArray();
-        //}
-        //
-        //private int[] GetAssetIndexes(ResourceData resourceData)
-        //{
-        //    Asset[] assets = m_ResourceCollection.GetAssets();
-        //    string[] assetNames = resourceData.GetAssetNames();
-        //    int[] assetIndexes = new int[assetNames.Length];
-        //    for (int i = 0; i < assetNames.Length; i++)
-        //    {
-        //        for (int j = 0; j < assets.Length; j++)
-        //        {
-        //            if (assets[j].Name == assetNames[i])
-        //            {
-        //                assetIndexes[i] = j;
-        //                break;
-        //            }
-        //        }
-        //    }
-        //
-        //    return assetIndexes;
-        //}
-        //
-        //private string[] GetResourceGroups()
-        //{
-        //    List<string> resourceGroups = new List<string>();
-        //    foreach (ResourceData resourceData in m_ResourceDatas.Values)
-        //    {
-        //        foreach (string resourceGroup in resourceData.GetResourceGroups())
-        //        {
-        //            if (resourceGroups.Contains(resourceGroup))
-        //            {
-        //                continue;
-        //            }
-        //
-        //            resourceGroups.Add(resourceGroup);
-        //        }
-        //    }
-        //
-        //    resourceGroups.Sort();
-        //    return resourceGroups.ToArray();
-        //}
-        //
-        //private int[] GetResourceIndexes(string resourceGroupName)
-        //{
-        //    List<int> resourceIndexes = new List<int>();
-        //    ResourceData[] resourceDatas = m_ResourceDatas.Values.ToArray();
-        //    for (int i = 0; i < resourceDatas.Length; i++)
-        //    {
-        //        foreach (string resourceGroup in resourceDatas[i].GetResourceGroups())
-        //        {
-        //            if (resourceGroup == resourceGroupName)
-        //            {
-        //                resourceIndexes.Add(i);
-        //                break;
-        //            }
-        //        }
-        //    }
-        //
-        //    return resourceIndexes.ToArray();
-        //}
-        //
-        //private BuildAssetBundleOptions GetBuildAssetBundleOptions()
-        //{
-        //    BuildAssetBundleOptions buildOptions = BuildAssetBundleOptions.None;
-        //
-        //    if (UncompressedAssetBundleSelected)
-        //    {
-        //        buildOptions |= BuildAssetBundleOptions.UncompressedAssetBundle;
-        //    }
-        //
-        //    if (DisableWriteTypeTreeSelected)
-        //    {
-        //        buildOptions |= BuildAssetBundleOptions.DisableWriteTypeTree;
-        //    }
-        //
-        //    if (DeterministicAssetBundleSelected)
-        //    {
-        //        buildOptions |= BuildAssetBundleOptions.DeterministicAssetBundle;
-        //    }
-        //
-        //    if (ForceRebuildAssetBundleSelected)
-        //    {
-        //        buildOptions |= BuildAssetBundleOptions.ForceRebuildAssetBundle;
-        //    }
-        //
-        //    if (IgnoreTypeTreeChangesSelected)
-        //    {
-        //        buildOptions |= BuildAssetBundleOptions.IgnoreTypeTreeChanges;
-        //    }
-        //
-        //    if (AppendHashToAssetBundleNameSelected)
-        //    {
-        //        buildOptions |= BuildAssetBundleOptions.AppendHashToAssetBundleName;
-        //    }
-        //
-        //    if (ChunkBasedCompressionSelected)
-        //    {
-        //        buildOptions |= BuildAssetBundleOptions.ChunkBasedCompression;
-        //    }
-        //
-        //    return buildOptions;
-        //}
-        //
-        //private bool GetResourceBuildMap(out AssetBundleBuild[] assetBundleBuildMap, out BinaryBuild[] binaryBuildMap)
-        //{
-        //    assetBundleBuildMap = null;
-        //    binaryBuildMap = null;
-        //    m_ResourceDatas.Clear();
-        //
-        //    Resource[] resources = m_ResourceCollection.GetResources();
-        //    foreach (Resource resource in resources)
-        //    {
-        //        m_ResourceDatas.Add(resource.FullName, new ResourceData(resource.Name, resource.Variant, resource.LoadType, resource.Packed, resource.GetResourceGroups()));
-        //    }
-        //
-        //    Asset[] assets = m_ResourceCollection.GetAssets();
-        //    foreach (Asset asset in assets)
-        //    {
-        //        string assetName = asset.Name;
-        //        if (string.IsNullOrEmpty(assetName))
-        //        {
-        //            m_BuildReport.LogError("Can not find asset by guid '{0}'.", asset.Guid);
-        //            return false;
-        //        }
-        //
-        //        string assetFileFullName = Application.dataPath.Substring(0, Application.dataPath.Length - AssetsStringLength) + assetName;
-        //        if (!File.Exists(assetFileFullName))
-        //        {
-        //            m_BuildReport.LogError("Can not find asset '{0}'.", assetFileFullName);
-        //            return false;
-        //        }
-        //
-        //        byte[] assetBytes = File.ReadAllBytes(assetFileFullName);
-        //        int assetHashCode = Utility.Verifier.GetCrc32(assetBytes);
-        //
-        //        List<string> dependencyAssetNames = new List<string>();
-        //        DependencyData dependencyData = m_ResourceAnalyzerController.GetDependencyData(assetName);
-        //        Asset[] dependencyAssets = dependencyData.GetDependencyAssets();
-        //        foreach (Asset dependencyAsset in dependencyAssets)
-        //        {
-        //            dependencyAssetNames.Add(dependencyAsset.Name);
-        //        }
-        //
-        //        dependencyAssetNames.Sort();
-        //
-        //        m_ResourceDatas[asset.Resource.FullName].AddAssetData(asset.Guid, assetName, assetBytes.Length, assetHashCode, dependencyAssetNames.ToArray());
-        //    }
-        //
-        //    foreach (ResourceData resourceData in m_ResourceDatas.Values)
-        //    {
-        //        if (resourceData.AssetCount <= 0)
-        //        {
-        //            m_BuildReport.LogError("Resource '{0}' has no asset.", GetResourceFullName(resourceData.Name, resourceData.Variant));
-        //            return false;
-        //        }
-        //    }
-        //
-        //    List<AssetBundleBuild> assetBundleBuilds = new List<AssetBundleBuild>();
-        //    List<BinaryBuild> binaryBuilds = new List<BinaryBuild>();
-        //    foreach (ResourceData resourceData in m_ResourceDatas.Values)
-        //    {
-        //        if (IsLoadFromBinary(resourceData.LoadType))
-        //        {
-        //            BinaryBuild build = new BinaryBuild();
-        //            build.resourceName = resourceData.Name;
-        //            build.resourceVariant = resourceData.Variant;
-        //            binaryBuilds.Add(build);
-        //        }
-        //        else
-        //        {
-        //            AssetBundleBuild build = new AssetBundleBuild();
-        //            build.assetBundleName = resourceData.Name;
-        //            build.assetBundleVariant = resourceData.Variant;
-        //            build.assetNames = resourceData.GetAssetNames();
-        //            assetBundleBuilds.Add(build);
-        //        }
-        //    }
-        //
-        //    assetBundleBuildMap = assetBundleBuilds.ToArray();
-        //    binaryBuildMap = binaryBuilds.ToArray();
-        //    return true;
-        //}
-        //
-        //private string GetResourceFullName(string name, string variant)
-        //{
-        //    return !string.IsNullOrEmpty(variant) ? Utility.Text.Format("{0}.{1}", name, variant) : name;
-        //}
-        //
-        //private BuildTarget GetBuildTarget(Platform platform)
-        //{
-        //    switch (platform)
-        //    {
-        //        case Platform.Windows:
-        //            return BuildTarget.StandaloneWindows;
-        //
-        //        case Platform.Windows64:
-        //            return BuildTarget.StandaloneWindows64;
-        //
-        //        case Platform.MacOS:
-        //#if UNITY_2017_3_OR_NEWER
-        //                    return BuildTarget.StandaloneOSX;
-        //#else   
-        //                    return BuildTarget.StandaloneOSXUniversal;
-        //#endif  
-        //        case Platform.Linux:
-        //            return BuildTarget.StandaloneLinux64;
-        //
-        //        case Platform.IOS:
-        //            return BuildTarget.iOS;
-        //
-        //        case Platform.Android:
-        //            return BuildTarget.Android;
-        //
-        //        case Platform.WindowsStore:
-        //            return BuildTarget.WSAPlayer;
-        //
-        //        case Platform.WebGL:
-        //            return BuildTarget.WebGL;
-        //
-        //        default:
-        //            throw new GameFrameworkException("Platform is invalid.");
-        //    }
-        //}
-        //
-        //private bool IsLoadFromBinary(LoadType loadType)
-        //{
-        //    return loadType == LoadType.LoadFromBinary || loadType == LoadType.LoadFromBinaryAndQuickDecrypt || loadType == LoadType.LoadFromBinaryAndDecrypt;
-        //}
-        //
-        //private string GetExtension(ResourceData data)
-        //{
-        //    if (IsLoadFromBinary(data.LoadType))
-        //    {
-        //        string assetName = data.GetAssetNames()[0];
-        //        int position = assetName.LastIndexOf('.');
-        //        if (position >= 0)
-        //        {
-        //            return assetName.Substring(position + 1);
-        //        }
-        //    }
-        //
-        //    return DefaultExtension;
-        //}
+        public bool BuildResources()
+        {
+            if (!IsValidOutputDirectory)
+            {
+                return false;
+            }
+        
+            Utility.Zip.SetZipHelper(new DefaultZipHelper());
+        
+            if (Directory.Exists(OutputPackagePath))
+            {
+                Directory.Delete(OutputPackagePath, true);
+            }
+        
+            Directory.CreateDirectory(OutputPackagePath);
+        
+            if (Directory.Exists(OutputFullPath))
+            {
+                Directory.Delete(OutputFullPath, true);
+            }
+        
+            Directory.CreateDirectory(OutputFullPath);
+        
+            if (Directory.Exists(OutputPackedPath))
+            {
+                Directory.Delete(OutputPackedPath, true);
+            }
+        
+            Directory.CreateDirectory(OutputPackedPath);
+        
+            if (Directory.Exists(BuildReportPath))
+            {
+                Directory.Delete(BuildReportPath, true);
+            }
+        
+            Directory.CreateDirectory(BuildReportPath);
+        
+            BuildAssetBundleOptions buildAssetBundleOptions = GetBuildAssetBundleOptions();
+            //m_BuildReport.Initialize(BuildReportPath, ProductName, CompanyName, GameIdentifier, GameFrameworkVersion, UnityVersion, ApplicableGameVersion, InternalResourceVersion,
+            //    Platforms, ZipSelected, (int)buildAssetBundleOptions, m_ResourceDatas);
+        
+            try
+            {
+                //m_BuildReport.LogInfo("Build Start Time: {0}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+        
+                if (m_BuildEventHandler != null)
+                {
+                    //m_BuildReport.LogInfo("Execute build event handler 'PreprocessAllPlatforms'...");
+                    m_BuildEventHandler.PreprocessAllPlatforms(ProductName, CompanyName, GameIdentifier, GameFrameworkVersion, UnityVersion, ApplicableGameVersion, InternalResourceVersion, buildAssetBundleOptions, ZipSelected, OutputDirectory, WorkingPath, OutputPackageSelected, OutputPackagePath, OutputFullSelected, OutputFullPath, OutputPackedSelected, OutputPackedPath, BuildReportPath);
+                }
+        
+                //m_BuildReport.LogInfo("Start prepare resource collection...");
+                if (!m_ResourceCollection.Load())
+                {
+                    //m_BuildReport.LogError("Can not parse 'ResourceCollection.xml', please use 'Resource Editor' tool first.");
+        
+                    if (m_BuildEventHandler != null)
+                    {
+                        //m_BuildReport.LogInfo("Execute build event handler 'PostprocessAllPlatforms'...");
+                        m_BuildEventHandler.PostprocessAllPlatforms(ProductName, CompanyName, GameIdentifier, GameFrameworkVersion, UnityVersion, ApplicableGameVersion, InternalResourceVersion, buildAssetBundleOptions, ZipSelected, OutputDirectory, WorkingPath, OutputPackageSelected, OutputPackagePath, OutputFullSelected, OutputFullPath, OutputPackedSelected, OutputPackedPath, BuildReportPath);
+                    }
+        
+                    //m_BuildReport.SaveReport();
+                    return false;
+                }
+        
+                if (Platforms == Platform.Undefined)
+                {
+                    //m_BuildReport.LogError("Platform undefined.");
+        
+                    if (m_BuildEventHandler != null)
+                    {
+                        //m_BuildReport.LogInfo("Execute build event handler 'PostprocessAllPlatforms'...");
+                        m_BuildEventHandler.PostprocessAllPlatforms(ProductName, CompanyName, GameIdentifier, GameFrameworkVersion, UnityVersion, ApplicableGameVersion, InternalResourceVersion, buildAssetBundleOptions, ZipSelected, OutputDirectory, WorkingPath, OutputPackageSelected, OutputPackagePath, OutputFullSelected, OutputFullPath, OutputPackedSelected, OutputPackedPath, BuildReportPath);
+                    }
+        
+                    //m_BuildReport.SaveReport();
+                    return false;
+                }
+        
+                //m_BuildReport.LogInfo("Prepare resource collection complete.");
+                //m_BuildReport.LogInfo("Start analyze assets dependency...");
+        
+                //m_ResourceAnalyzerController.Analyze();
+        
+                //m_BuildReport.LogInfo("Analyze assets dependency complete.");
+                //m_BuildReport.LogInfo("Start prepare build map...");
+        
+                AssetBundleBuild[] assetBundleBuildMap = null;
+                //BinaryBuild[] binaryBuildMap = null;
+                if (!GetResourceBuildMap(out assetBundleBuildMap, out binaryBuildMap))
+                {
+                    //m_BuildReport.LogError("Get resource build map failure.");
+        
+                    if (m_BuildEventHandler != null)
+                    {
+                        //m_BuildReport.LogInfo("Execute build event handler 'PostprocessAllPlatforms'...");
+                        m_BuildEventHandler.PostprocessAllPlatforms(ProductName, CompanyName, GameIdentifier, GameFrameworkVersion, UnityVersion, ApplicableGameVersion, InternalResourceVersion, buildAssetBundleOptions, ZipSelected, OutputDirectory, WorkingPath, OutputPackageSelected, OutputPackagePath, OutputFullSelected, OutputFullPath, OutputPackedSelected, OutputPackedPath, BuildReportPath);
+                    }
+        
+                    //m_BuildReport.SaveReport();
+                    return false;
+                }
+        
+                //m_BuildReport.LogInfo("Prepare resource build map complete.");
+                //m_BuildReport.LogInfo("Start build resources for selected platforms...");
+        
+                bool watchResult = m_BuildEventHandler == null || !m_BuildEventHandler.ContinueOnFailure;
+                bool isSuccess = false;
+                isSuccess = BuildResources(Platform.Windows, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
+        
+                if (!watchResult || isSuccess)
+                {
+                    isSuccess = BuildResources(Platform.Windows64, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
+                }
+        
+                if (!watchResult || isSuccess)
+                {
+                    isSuccess = BuildResources(Platform.MacOS, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
+                }
+        
+                if (!watchResult || isSuccess)
+                {
+                    isSuccess = BuildResources(Platform.Linux, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
+                }
+        
+                if (!watchResult || isSuccess)
+                {
+                    isSuccess = BuildResources(Platform.IOS, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
+                }
+        
+                if (!watchResult || isSuccess)
+                {
+                    isSuccess = BuildResources(Platform.Android, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
+                }
+        
+                if (!watchResult || isSuccess)
+                {
+                    isSuccess = BuildResources(Platform.WindowsStore, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
+                }
+        
+                if (!watchResult || isSuccess)
+                {
+                    isSuccess = BuildResources(Platform.WebGL, assetBundleBuildMap, buildAssetBundleOptions, binaryBuildMap);
+                }
+        
+                if (m_BuildEventHandler != null)
+                {
+                    //m_BuildReport.LogInfo("Execute build event handler 'PostprocessAllPlatforms'...");
+                    m_BuildEventHandler.PostprocessAllPlatforms(ProductName, CompanyName, GameIdentifier, GameFrameworkVersion, UnityVersion, ApplicableGameVersion, InternalResourceVersion, buildAssetBundleOptions, ZipSelected, OutputDirectory, WorkingPath, OutputPackageSelected, OutputPackagePath, OutputFullSelected, OutputFullPath, OutputPackedSelected, OutputPackedPath, BuildReportPath);
+                }
+        
+                //m_BuildReport.LogInfo("Build resources for selected platforms complete.");
+                //m_BuildReport.SaveReport();
+                return true;
+            }
+            catch (Exception exception)
+            {
+                string errorMessage = exception.ToString();
+                //m_BuildReport.LogFatal(errorMessage);
+                //m_BuildReport.SaveReport();
+                if (BuildResourceError != null)
+                {
+                    BuildResourceError(errorMessage);
+                }
+        
+                return false;
+            }
+        }
+        
+        private bool BuildResources(Platform platform, AssetBundleBuild[] assetBundleBuildMap, BuildAssetBundleOptions buildAssetBundleOptions, BinaryBuild[] binaryBuildMap)
+        {
+            if (!IsPlatformSelected(platform))
+            {
+                return true;
+            }
+        
+            string platformName = platform.ToString();
+            //m_BuildReport.LogInfo("Start build resources for '{0}'...", platformName);
+        
+            string workingPath = Utility.Text.Format("{0}{1}/", WorkingPath, platformName);
+            //m_BuildReport.LogInfo("Working path is '{0}'.", workingPath);
+        
+            string outputPackagePath = Utility.Text.Format("{0}{1}/", OutputPackagePath, platformName);
+            if (OutputPackageSelected)
+            {
+                Directory.CreateDirectory(outputPackagePath);
+                //m_BuildReport.LogInfo("Output package is selected, path is '{0}'.", outputPackagePath);
+            }
+            else
+            {
+                //m_BuildReport.LogInfo("Output package is not selected.");
+            }
+        
+            string outputFullPath = Utility.Text.Format("{0}{1}/", OutputFullPath, platformName);
+            if (OutputFullSelected)
+            {
+                Directory.CreateDirectory(outputFullPath);
+                //m_BuildReport.LogInfo("Output full is selected, path is '{0}'.", outputFullPath);
+            }
+            else
+            {
+                //m_BuildReport.LogInfo("Output full is not selected.");
+            }
+        
+            string outputPackedPath = Utility.Text.Format("{0}{1}/", OutputPackedPath, platformName);
+            if (OutputPackedSelected)
+            {
+                Directory.CreateDirectory(outputPackedPath);
+                //m_BuildReport.LogInfo("Output packed is selected, path is '{0}'.", outputPackedPath);
+            }
+            else
+            {
+                //m_BuildReport.LogInfo("Output packed is not selected.");
+            }
+        
+            // Clean working path
+            List<string> validNames = new List<string>();
+            foreach (AssetBundleBuild i in assetBundleBuildMap)
+            {
+                validNames.Add(GetResourceFullName(i.assetBundleName, i.assetBundleVariant).ToLower());
+            }
+        
+            if (Directory.Exists(workingPath))
+            {
+                Uri workingUri = new Uri(workingPath, UriKind.Absolute);
+                string[] fileNames = Directory.GetFiles(workingPath, "*", SearchOption.AllDirectories);
+                foreach (string fileName in fileNames)
+                {
+                    if (fileName.EndsWith(".manifest"))
+                    {
+                        continue;
+                    }
+        
+                    string relativeName = workingUri.MakeRelativeUri(new Uri(fileName, UriKind.Absolute)).ToString();
+                    if (!validNames.Contains(relativeName))
+                    {
+                        File.Delete(fileName);
+                    }
+                }
+        
+                string[] manifestNames = Directory.GetFiles(workingPath, "*.manifest", SearchOption.AllDirectories);
+                foreach (string manifestName in manifestNames)
+                {
+                    if (!File.Exists(manifestName.Substring(0, manifestName.LastIndexOf('.'))))
+                    {
+                        File.Delete(manifestName);
+                    }
+                }
+        
+                Utility.Path.RemoveEmptyDirectory(workingPath);
+            }
+        
+            if (!Directory.Exists(workingPath))
+            {
+                Directory.CreateDirectory(workingPath);
+            }
+        
+            if (m_BuildEventHandler != null)
+            {
+                //m_BuildReport.LogInfo("Execute build event handler 'PreprocessPlatform' for '{0}'...", platformName);
+                m_BuildEventHandler.PreprocessPlatform(platform, workingPath, OutputPackageSelected, outputPackagePath, OutputFullSelected, outputFullPath, OutputPackedSelected, outputPackedPath);
+            }
+        
+            // Build AssetBundles
+            //m_BuildReport.LogInfo("Unity start build asset bundles for '{0}'...", platformName);
+            AssetBundleManifest assetBundleManifest = BuildPipeline.BuildAssetBundles(workingPath, assetBundleBuildMap, buildAssetBundleOptions, GetBuildTarget(platform));
+            if (assetBundleManifest == null)
+            {
+                //m_BuildReport.LogError("Build asset bundles for '{0}' failure.", platformName);
+        
+                if (m_BuildEventHandler != null)
+                {
+                    //m_BuildReport.LogInfo("Execute build event handler 'PostprocessPlatform' for '{0}'...", platformName);
+                    m_BuildEventHandler.PostprocessPlatform(platform, workingPath, OutputPackageSelected, outputPackagePath, OutputFullSelected, outputFullPath, OutputPackedSelected, outputPackedPath, false);
+                }
+        
+                return false;
+            }
+        
+            //m_BuildReport.LogInfo("Unity build asset bundles for '{0}' complete.", platformName);
+        
+            // Process AssetBundles
+            for (int i = 0; i < assetBundleBuildMap.Length; i++)
+            {
+                string fullName = GetResourceFullName(assetBundleBuildMap[i].assetBundleName, assetBundleBuildMap[i].assetBundleVariant);
+                if (ProcessingAssetBundle != null)
+                {
+                    if (ProcessingAssetBundle(fullName, (float)(i + 1) / assetBundleBuildMap.Length))
+                    {
+                        m_BuildReport.LogWarning("The build has been canceled by user.");
+        
+                        if (m_BuildEventHandler != null)
+                        {
+                            m_BuildReport.LogInfo("Execute build event handler 'PostprocessPlatform' for '{0}'...", platformName);
+                            m_BuildEventHandler.PostprocessPlatform(platform, workingPath, OutputPackageSelected, outputPackagePath, OutputFullSelected, outputFullPath, OutputPackedSelected, outputPackedPath, false);
+                        }
+        
+                        return false;
+                    }
+                }
+        
+                //m_BuildReport.LogInfo("Start process asset bundle '{0}' for '{1}'...", fullName, platformName);
+        
+                ProcessAssetBundle(platform, workingPath, outputPackagePath, outputFullPath, outputPackedPath, ZipSelected, assetBundleBuildMap[i].assetBundleName, assetBundleBuildMap[i].assetBundleVariant);
+        
+                //m_BuildReport.LogInfo("Process asset bundle '{0}' for '{1}' complete.", fullName, platformName);
+            }
+        
+            // Process Binaries
+            for (int i = 0; i < binaryBuildMap.Length; i++)
+            {
+                string fullName = GetResourceFullName(binaryBuildMap[i].resourceName, binaryBuildMap[i].resourceVariant);
+                if (ProcessingBinary != null)
+                {
+                    if (ProcessingBinary(fullName, (float)(i + 1) / binaryBuildMap.Length))
+                    {
+                        //m_BuildReport.LogWarning("The build has been canceled by user.");
+        
+                        if (m_BuildEventHandler != null)
+                        {
+                            //m_BuildReport.LogInfo("Execute build event handler 'PostprocessPlatform' for '{0}'...", platformName);
+                            m_BuildEventHandler.PostprocessPlatform(platform, workingPath, OutputPackageSelected, outputPackagePath, OutputFullSelected, outputFullPath, OutputPackedSelected, outputPackedPath, false);
+                        }
+        
+                        return false;
+                    }
+                }
+        
+                //m_BuildReport.LogInfo("Start process binary '{0}' for '{1}'...", fullName, platformName);
+        
+                ProcessBinary(platform, workingPath, outputPackagePath, outputFullPath, outputPackedPath, ZipSelected, binaryBuildMap[i].resourceName, binaryBuildMap[i].resourceVariant);
+        
+                //m_BuildReport.LogInfo("Process binary '{0}' for '{1}' complete.", fullName, platformName);
+            }
+        
+            if (OutputPackageSelected)
+            {
+                ProcessPackageVersionList(outputPackagePath, platform);
+                //m_BuildReport.LogInfo("Process package version list for '{0}' complete.", platformName);
+            }
+        
+            if (OutputFullSelected)
+            {
+                VersionListData versionListData = ProcessUpdatableVersionList(outputFullPath, platform);
+                //m_BuildReport.LogInfo("Process updatable version list for '{0}' complete, updatable version list path is '{1}', length is '{2}', hash code is '{3}[0x{3:X8}]', zip length is '{4}', zip hash code is '{5}[0x{5:X8}]'.", platformName, versionListData.Path, versionListData.Length.ToString(), versionListData.HashCode, versionListData.ZipLength.ToString(), versionListData.ZipHashCode);
+            }
+        
+            if (OutputPackedSelected)
+            {
+                ProcessReadOnlyVersionList(outputPackedPath, platform);
+                //m_BuildReport.LogInfo("Process read only version list for '{0}' complete.", platformName);
+            }
+        
+            if (m_BuildEventHandler != null)
+            {
+                //m_BuildReport.LogInfo("Execute build event handler 'PostprocessPlatform' for '{0}'...", platformName);
+                m_BuildEventHandler.PostprocessPlatform(platform, workingPath, OutputPackageSelected, outputPackagePath, OutputFullSelected, outputFullPath, OutputPackedSelected, outputPackedPath, true);
+            }
+        
+            if (ProcessResourceComplete != null)
+            {
+                ProcessResourceComplete(platform);
+            }
+        
+            //m_BuildReport.LogInfo("Build resources for '{0}' success.", platformName);
+            return true;
+        }
+        
+        private void ProcessAssetBundle(Platform platform, string workingPath, string outputPackagePath, string outputFullPath, string outputPackedPath, bool zip, string name, string variant)
+        {
+            string fullName = GetResourceFullName(name, variant);
+            ResourceData resourceData = m_ResourceDatas[fullName];
+            string fullNameWithExtension = Utility.Text.Format("{0}.{1}", fullName, GetExtension(resourceData));
+            string workingName = Utility.Path.GetRegularPath(Path.Combine(workingPath, fullName.ToLower()));
+        
+            byte[] bytes = File.ReadAllBytes(workingName);
+            int length = bytes.Length;
+            int hashCode = Utility.Verifier.GetCrc32(bytes);
+            int zipLength = length;
+            int zipHashCode = hashCode;
+        
+            byte[] hashBytes = Utility.Converter.GetBytes(hashCode);
+            if (resourceData.LoadType == LoadType.LoadFromMemoryAndQuickDecrypt)
+            {
+                bytes = Utility.Encryption.GetQuickXorBytes(bytes, hashBytes);
+            }
+            else if (resourceData.LoadType == LoadType.LoadFromMemoryAndDecrypt)
+            {
+                bytes = Utility.Encryption.GetXorBytes(bytes, hashBytes);
+            }
+        
+            // Package AssetBundle
+            if (OutputPackageSelected)
+            {
+                string packagePath = Utility.Path.GetRegularPath(Path.Combine(outputPackagePath, fullNameWithExtension));
+                string packageDirectoryName = Path.GetDirectoryName(packagePath);
+                if (!Directory.Exists(packageDirectoryName))
+                {
+                    Directory.CreateDirectory(packageDirectoryName);
+                }
+        
+                File.WriteAllBytes(packagePath, bytes);
+            }
+        
+            // Packed AssetBundle
+            if (OutputPackedSelected && resourceData.Packed)
+            {
+                string packedPath = Utility.Path.GetRegularPath(Path.Combine(outputPackedPath, fullNameWithExtension));
+                string packedDirectoryName = Path.GetDirectoryName(packedPath);
+                if (!Directory.Exists(packedDirectoryName))
+                {
+                    Directory.CreateDirectory(packedDirectoryName);
+                }
+        
+                File.WriteAllBytes(packedPath, bytes);
+            }
+        
+            // Full AssetBundle
+            if (OutputFullSelected)
+            {
+                string fullNameWithCrc32 = variant != null ? Utility.Text.Format("{0}.{1}.{2:x8}.{3}", name, variant, hashCode, DefaultExtension) : Utility.Text.Format("{0}.{1:x8}.{2}", name, hashCode, DefaultExtension);
+                string fullPath = Utility.Path.GetRegularPath(Path.Combine(outputFullPath, fullNameWithCrc32));
+                string fullDirectoryName = Path.GetDirectoryName(fullPath);
+                if (!Directory.Exists(fullDirectoryName))
+                {
+                    Directory.CreateDirectory(fullDirectoryName);
+                }
+        
+                if (zip)
+                {
+                    byte[] zipBytes = Utility.Zip.Compress(bytes);
+                    zipLength = zipBytes.Length;
+                    zipHashCode = Utility.Verifier.GetCrc32(zipBytes);
+                    File.WriteAllBytes(fullPath, zipBytes);
+                }
+                else
+                {
+                    File.WriteAllBytes(fullPath, bytes);
+                }
+            }
+        
+            resourceData.AddCode(platform, length, hashCode, zipLength, zipHashCode);
+        }
+        
+        private void ProcessBinary(Platform platform, string workingPath, string outputPackagePath, string outputFullPath, string outputPackedPath, bool zip, string name, string variant)
+        {
+            string fullName = GetResourceFullName(name, variant);
+            ResourceData resourceData = m_ResourceDatas[fullName];
+            string fullNameWithExtension = Utility.Text.Format("{0}.{1}", fullName, GetExtension(resourceData));
+            string assetName = resourceData.GetAssetNames()[0];
+            string assetPath = Utility.Path.GetRegularPath(Application.dataPath.Substring(0, Application.dataPath.Length - AssetsStringLength) + assetName);
+        
+            byte[] bytes = File.ReadAllBytes(assetPath);
+            int length = bytes.Length;
+            int hashCode = Utility.Verifier.GetCrc32(bytes);
+            int zipLength = length;
+            int zipHashCode = hashCode;
+        
+            byte[] hashBytes = Utility.Converter.GetBytes(hashCode);
+            if (resourceData.LoadType == LoadType.LoadFromBinaryAndQuickDecrypt)
+            {
+                bytes = Utility.Encryption.GetQuickXorBytes(bytes, hashBytes);
+            }
+            else if (resourceData.LoadType == LoadType.LoadFromBinaryAndDecrypt)
+            {
+                bytes = Utility.Encryption.GetXorBytes(bytes, hashBytes);
+            }
+        
+            // Package Binary
+            if (OutputPackageSelected)
+            {
+                string packagePath = Utility.Path.GetRegularPath(Path.Combine(outputPackagePath, fullNameWithExtension));
+                string packageDirectoryName = Path.GetDirectoryName(packagePath);
+                if (!Directory.Exists(packageDirectoryName))
+                {
+                    Directory.CreateDirectory(packageDirectoryName);
+                }
+        
+                File.WriteAllBytes(packagePath, bytes);
+            }
+        
+            // Packed Binary
+            if (OutputPackedSelected && resourceData.Packed)
+            {
+                string packedPath = Utility.Path.GetRegularPath(Path.Combine(outputPackedPath, fullNameWithExtension));
+                string packedDirectoryName = Path.GetDirectoryName(packedPath);
+                if (!Directory.Exists(packedDirectoryName))
+                {
+                    Directory.CreateDirectory(packedDirectoryName);
+                }
+        
+                File.WriteAllBytes(packedPath, bytes);
+            }
+        
+            // Full Binary
+            if (OutputFullSelected)
+            {
+                string fullNameWithCrc32 = variant != null ? Utility.Text.Format("{0}.{1}.{2:x8}.{3}", name, variant, hashCode, DefaultExtension) : Utility.Text.Format("{0}.{1:x8}.{2}", name, hashCode, DefaultExtension);
+                string fullPath = Utility.Path.GetRegularPath(Path.Combine(outputFullPath, fullNameWithCrc32));
+                string fullDirectoryName = Path.GetDirectoryName(fullPath);
+                if (!Directory.Exists(fullDirectoryName))
+                {
+                    Directory.CreateDirectory(fullDirectoryName);
+                }
+        
+                if (zip)
+                {
+                    byte[] zipBytes = Utility.Zip.Compress(bytes);
+                    zipLength = zipBytes.Length;
+                    zipHashCode = Utility.Verifier.GetCrc32(zipBytes);
+                    File.WriteAllBytes(fullPath, zipBytes);
+                }
+                else
+                {
+                    File.WriteAllBytes(fullPath, bytes);
+                }
+            }
+        
+            resourceData.AddCode(platform, length, hashCode, zipLength, zipHashCode);
+        }
+        
+        private void ProcessPackageVersionList(string outputPackagePath, Platform platform)
+        {
+            Asset[] originalAssets = m_ResourceCollection.GetAssets();
+            PackageVersionList.Asset[] assets = new PackageVersionList.Asset[originalAssets.Length];
+            for (int i = 0; i < originalAssets.Length; i++)
+            {
+                Asset originalAsset = originalAssets[i];
+                assets[i] = new PackageVersionList.Asset(originalAsset.Name, GetDependencyAssetIndexes(originalAsset.Name));
+            }
+        
+            int index = 0;
+            PackageVersionList.Resource[] resources = new PackageVersionList.Resource[m_ResourceCollection.ResourceCount];
+            foreach (ResourceData resourceData in m_ResourceDatas.Values)
+            {
+                ResourceCode resourceCode = resourceData.GetCode(platform);
+                resources[index++] = new PackageVersionList.Resource(resourceData.Name, resourceData.Variant, GetExtension(resourceData), (byte)resourceData.LoadType, resourceCode.Length, resourceCode.HashCode, GetAssetIndexes(resourceData));
+            }
+        
+            string[] originalResourceGroup = GetResourceGroups();
+            PackageVersionList.ResourceGroup[] resourceGroups = new PackageVersionList.ResourceGroup[originalResourceGroup.Length];
+            for (int i = 0; i < originalResourceGroup.Length; i++)
+            {
+                resourceGroups[i] = new PackageVersionList.ResourceGroup(originalResourceGroup[i], GetResourceIndexes(originalResourceGroup[i]));
+            }
+        
+            PackageVersionList versionList = new PackageVersionList(ApplicableGameVersion, InternalResourceVersion, assets, resources, resourceGroups);
+            PackageVersionListSerializer serializer = new PackageVersionListSerializer();
+            serializer.RegisterSerializeCallback(0, BuiltinVersionListSerializer.SerializePackageVersionListCallback_V0);
+            serializer.RegisterSerializeCallback(1, BuiltinVersionListSerializer.SerializePackageVersionListCallback_V1);
+            string packageVersionListPath = Utility.Path.GetRegularPath(Path.Combine(outputPackagePath, RemoteVersionListFileName));
+            using (FileStream fileStream = new FileStream(packageVersionListPath, FileMode.CreateNew, FileAccess.Write))
+            {
+                if (!serializer.Serialize(fileStream, versionList))
+                {
+                    throw new GameFrameworkException("Serialize package version list failure.");
+                }
+            }
+        }
+        
+        private VersionListData ProcessUpdatableVersionList(string outputFullPath, Platform platform)
+        {
+            Asset[] originalAssets = m_ResourceCollection.GetAssets();
+            UpdatableVersionList.Asset[] assets = new UpdatableVersionList.Asset[originalAssets.Length];
+            for (int i = 0; i < originalAssets.Length; i++)
+            {
+                Asset originalAsset = originalAssets[i];
+                assets[i] = new UpdatableVersionList.Asset(originalAsset.Name, GetDependencyAssetIndexes(originalAsset.Name));
+            }
+        
+            int index = 0;
+            UpdatableVersionList.Resource[] resources = new UpdatableVersionList.Resource[m_ResourceCollection.ResourceCount];
+            foreach (ResourceData resourceData in m_ResourceDatas.Values)
+            {
+                ResourceCode resourceCode = resourceData.GetCode(platform);
+                resources[index++] = new UpdatableVersionList.Resource(resourceData.Name, resourceData.Variant, GetExtension(resourceData), (byte)resourceData.LoadType, resourceCode.Length, resourceCode.HashCode, resourceCode.ZipLength, resourceCode.ZipHashCode, GetAssetIndexes(resourceData));
+            }
+        
+            string[] originalResourceGroup = GetResourceGroups();
+            UpdatableVersionList.ResourceGroup[] resourceGroups = new UpdatableVersionList.ResourceGroup[originalResourceGroup.Length];
+            for (int i = 0; i < originalResourceGroup.Length; i++)
+            {
+                resourceGroups[i] = new UpdatableVersionList.ResourceGroup(originalResourceGroup[i], GetResourceIndexes(originalResourceGroup[i]));
+            }
+        
+            UpdatableVersionList versionList = new UpdatableVersionList(ApplicableGameVersion, InternalResourceVersion, assets, resources, resourceGroups);
+            UpdatableVersionListSerializer serializer = new UpdatableVersionListSerializer();
+            serializer.RegisterSerializeCallback(0, BuiltinVersionListSerializer.SerializeUpdatableVersionListCallback_V0);
+            serializer.RegisterSerializeCallback(1, BuiltinVersionListSerializer.SerializeUpdatableVersionListCallback_V1);
+            string updatableVersionListPath = Utility.Path.GetRegularPath(Path.Combine(outputFullPath, RemoteVersionListFileName));
+            using (FileStream fileStream = new FileStream(updatableVersionListPath, FileMode.CreateNew, FileAccess.Write))
+            {
+                if (!serializer.Serialize(fileStream, versionList))
+                {
+                    throw new GameFrameworkException("Serialize updatable version list failure.");
+                }
+            }
+        
+            byte[] bytes = File.ReadAllBytes(updatableVersionListPath);
+            int length = bytes.Length;
+            int hashCode = Utility.Verifier.GetCrc32(bytes);
+            bytes = Utility.Zip.Compress(bytes);
+            int zipLength = bytes.Length;
+            File.WriteAllBytes(updatableVersionListPath, bytes);
+            int zipHashCode = Utility.Verifier.GetCrc32(bytes);
+            int dotPosition = RemoteVersionListFileName.LastIndexOf('.');
+            string versionListFullNameWithCrc32 = Utility.Text.Format("{0}.{2:x8}.{1}", RemoteVersionListFileName.Substring(0, dotPosition), RemoteVersionListFileName.Substring(dotPosition + 1), hashCode);
+            string updatableVersionListPathWithCrc32 = Utility.Path.GetRegularPath(Path.Combine(outputFullPath, versionListFullNameWithCrc32));
+            File.Move(updatableVersionListPath, updatableVersionListPathWithCrc32);
+        
+            return new VersionListData(updatableVersionListPathWithCrc32, length, hashCode, zipLength, zipHashCode);
+        }
+        
+        private void ProcessReadOnlyVersionList(string outputPackedPath, Platform platform)
+        {
+            List<ResourceData> packedResourceDatas = new List<ResourceData>();
+            foreach (ResourceData resourceData in m_ResourceDatas.Values)
+            {
+                if (!resourceData.Packed)
+                {
+                    continue;
+                }
+        
+                packedResourceDatas.Add(resourceData);
+            }
+        
+            LocalVersionList.Resource[] resources = new LocalVersionList.Resource[packedResourceDatas.Count];
+            for (int i = 0; i < packedResourceDatas.Count; i++)
+            {
+                ResourceData resourceData = packedResourceDatas[i];
+                ResourceCode resourceCode = resourceData.GetCode(platform);
+                resources[i] = new LocalVersionList.Resource(resourceData.Name, resourceData.Variant, GetExtension(resourceData), (byte)resourceData.LoadType, resourceCode.Length, resourceCode.HashCode);
+            }
+        
+            LocalVersionList versionList = new LocalVersionList(resources);
+            ReadOnlyVersionListSerializer serializer = new ReadOnlyVersionListSerializer();
+            serializer.RegisterSerializeCallback(0, BuiltinVersionListSerializer.SerializeLocalVersionListCallback_V0);
+            serializer.RegisterSerializeCallback(1, BuiltinVersionListSerializer.SerializeLocalVersionListCallback_V1);
+            string readOnlyVersionListPath = Utility.Path.GetRegularPath(Path.Combine(outputPackedPath, LocalVersionListFileName));
+            using (FileStream fileStream = new FileStream(readOnlyVersionListPath, FileMode.CreateNew, FileAccess.Write))
+            {
+                if (!serializer.Serialize(fileStream, versionList))
+                {
+                    throw new GameFrameworkException("Serialize read only version list failure.");
+                }
+            }
+        }
+        
+        private int[] GetDependencyAssetIndexes(string assetName)
+        {
+            List<int> dependencyAssetIndexes = new List<int>();
+            Asset[] assets = m_ResourceCollection.GetAssets();
+            DependencyData dependencyData = m_ResourceAnalyzerController.GetDependencyData(assetName);
+            foreach (Asset dependencyAsset in dependencyData.GetDependencyAssets())
+            {
+                for (int i = 0; i < assets.Length; i++)
+                {
+                    if (assets[i] == dependencyAsset)
+                    {
+                        dependencyAssetIndexes.Add(i);
+                        break;
+                    }
+                }
+            }
+        
+            dependencyAssetIndexes.Sort();
+            return dependencyAssetIndexes.ToArray();
+        }
+        
+        private int[] GetAssetIndexes(ResourceData resourceData)
+        {
+            Asset[] assets = m_ResourceCollection.GetAssets();
+            string[] assetNames = resourceData.GetAssetNames();
+            int[] assetIndexes = new int[assetNames.Length];
+            for (int i = 0; i < assetNames.Length; i++)
+            {
+                for (int j = 0; j < assets.Length; j++)
+                {
+                    if (assets[j].Name == assetNames[i])
+                    {
+                        assetIndexes[i] = j;
+                        break;
+                    }
+                }
+            }
+        
+            return assetIndexes;
+        }
+        
+        private string[] GetResourceGroups()
+        {
+            List<string> resourceGroups = new List<string>();
+            foreach (ResourceData resourceData in m_ResourceDatas.Values)
+            {
+                foreach (string resourceGroup in resourceData.GetResourceGroups())
+                {
+                    if (resourceGroups.Contains(resourceGroup))
+                    {
+                        continue;
+                    }
+        
+                    resourceGroups.Add(resourceGroup);
+                }
+            }
+        
+            resourceGroups.Sort();
+            return resourceGroups.ToArray();
+        }
+        
+        private int[] GetResourceIndexes(string resourceGroupName)
+        {
+            List<int> resourceIndexes = new List<int>();
+            ResourceData[] resourceDatas = m_ResourceDatas.Values.ToArray();
+            for (int i = 0; i < resourceDatas.Length; i++)
+            {
+                foreach (string resourceGroup in resourceDatas[i].GetResourceGroups())
+                {
+                    if (resourceGroup == resourceGroupName)
+                    {
+                        resourceIndexes.Add(i);
+                        break;
+                    }
+                }
+            }
+        
+            return resourceIndexes.ToArray();
+        }
+        
+        private BuildAssetBundleOptions GetBuildAssetBundleOptions()
+        {
+            BuildAssetBundleOptions buildOptions = BuildAssetBundleOptions.None;
+        
+            if (UncompressedAssetBundleSelected)
+            {
+                buildOptions |= BuildAssetBundleOptions.UncompressedAssetBundle;
+            }
+        
+            if (DisableWriteTypeTreeSelected)
+            {
+                buildOptions |= BuildAssetBundleOptions.DisableWriteTypeTree;
+            }
+        
+            if (DeterministicAssetBundleSelected)
+            {
+                buildOptions |= BuildAssetBundleOptions.DeterministicAssetBundle;
+            }
+        
+            if (ForceRebuildAssetBundleSelected)
+            {
+                buildOptions |= BuildAssetBundleOptions.ForceRebuildAssetBundle;
+            }
+        
+            if (IgnoreTypeTreeChangesSelected)
+            {
+                buildOptions |= BuildAssetBundleOptions.IgnoreTypeTreeChanges;
+            }
+        
+            if (AppendHashToAssetBundleNameSelected)
+            {
+                buildOptions |= BuildAssetBundleOptions.AppendHashToAssetBundleName;
+            }
+        
+            if (ChunkBasedCompressionSelected)
+            {
+                buildOptions |= BuildAssetBundleOptions.ChunkBasedCompression;
+            }
+        
+            return buildOptions;
+        }
+        
+        private bool GetResourceBuildMap(out AssetBundleBuild[] assetBundleBuildMap, out BinaryBuild[] binaryBuildMap)
+        {
+            assetBundleBuildMap = null;
+            binaryBuildMap = null;
+            m_ResourceDatas.Clear();
+        
+            Resource[] resources = m_ResourceCollection.GetResources();
+            foreach (Resource resource in resources)
+            {
+                m_ResourceDatas.Add(resource.FullName, new ResourceData(resource.Name, resource.Variant, resource.LoadType, resource.Packed, resource.GetResourceGroups()));
+            }
+        
+            Asset[] assets = m_ResourceCollection.GetAssets();
+            foreach (Asset asset in assets)
+            {
+                string assetName = asset.Name;
+                if (string.IsNullOrEmpty(assetName))
+                {
+                    m_BuildReport.LogError("Can not find asset by guid '{0}'.", asset.Guid);
+                    return false;
+                }
+        
+                string assetFileFullName = Application.dataPath.Substring(0, Application.dataPath.Length - AssetsStringLength) + assetName;
+                if (!File.Exists(assetFileFullName))
+                {
+                    m_BuildReport.LogError("Can not find asset '{0}'.", assetFileFullName);
+                    return false;
+                }
+        
+                byte[] assetBytes = File.ReadAllBytes(assetFileFullName);
+                int assetHashCode = Utility.Verifier.GetCrc32(assetBytes);
+        
+                List<string> dependencyAssetNames = new List<string>();
+                DependencyData dependencyData = m_ResourceAnalyzerController.GetDependencyData(assetName);
+                Asset[] dependencyAssets = dependencyData.GetDependencyAssets();
+                foreach (Asset dependencyAsset in dependencyAssets)
+                {
+                    dependencyAssetNames.Add(dependencyAsset.Name);
+                }
+        
+                dependencyAssetNames.Sort();
+        
+                m_ResourceDatas[asset.Resource.FullName].AddAssetData(asset.Guid, assetName, assetBytes.Length, assetHashCode, dependencyAssetNames.ToArray());
+            }
+        
+            foreach (ResourceData resourceData in m_ResourceDatas.Values)
+            {
+                if (resourceData.AssetCount <= 0)
+                {
+                    m_BuildReport.LogError("Resource '{0}' has no asset.", GetResourceFullName(resourceData.Name, resourceData.Variant));
+                    return false;
+                }
+            }
+        
+            List<AssetBundleBuild> assetBundleBuilds = new List<AssetBundleBuild>();
+            List<BinaryBuild> binaryBuilds = new List<BinaryBuild>();
+            foreach (ResourceData resourceData in m_ResourceDatas.Values)
+            {
+                if (IsLoadFromBinary(resourceData.LoadType))
+                {
+                    BinaryBuild build = new BinaryBuild();
+                    build.resourceName = resourceData.Name;
+                    build.resourceVariant = resourceData.Variant;
+                    binaryBuilds.Add(build);
+                }
+                else
+                {
+                    AssetBundleBuild build = new AssetBundleBuild();
+                    build.assetBundleName = resourceData.Name;
+                    build.assetBundleVariant = resourceData.Variant;
+                    build.assetNames = resourceData.GetAssetNames();
+                    assetBundleBuilds.Add(build);
+                }
+            }
+        
+            assetBundleBuildMap = assetBundleBuilds.ToArray();
+            binaryBuildMap = binaryBuilds.ToArray();
+            return true;
+        }
+        
+        private string GetResourceFullName(string name, string variant)
+        {
+            return !string.IsNullOrEmpty(variant) ? Utility.Text.Format("{0}.{1}", name, variant) : name;
+        }
+        
+        private BuildTarget GetBuildTarget(Platform platform)
+        {
+            switch (platform)
+            {
+                case Platform.Windows:
+                    return BuildTarget.StandaloneWindows;
+        
+                case Platform.Windows64:
+                    return BuildTarget.StandaloneWindows64;
+        
+                case Platform.MacOS:
+        #if UNITY_2017_3_OR_NEWER
+                            return BuildTarget.StandaloneOSX;
+        #else   
+                            return BuildTarget.StandaloneOSXUniversal;
+        #endif  
+                case Platform.Linux:
+                    return BuildTarget.StandaloneLinux64;
+        
+                case Platform.IOS:
+                    return BuildTarget.iOS;
+        
+                case Platform.Android:
+                    return BuildTarget.Android;
+        
+                case Platform.WindowsStore:
+                    return BuildTarget.WSAPlayer;
+        
+                case Platform.WebGL:
+                    return BuildTarget.WebGL;
+        
+                default:
+                    throw new GameFrameworkException("Platform is invalid.");
+            }
+        }
+        
+        private bool IsLoadFromBinary(LoadType loadType)
+        {
+            return loadType == LoadType.LoadFromBinary || loadType == LoadType.LoadFromBinaryAndQuickDecrypt || loadType == LoadType.LoadFromBinaryAndDecrypt;
+        }
+        
+        private string GetExtension(ResourceData data)
+        {
+            if (IsLoadFromBinary(data.LoadType))
+            {
+                string assetName = data.GetAssetNames()[0];
+                int position = assetName.LastIndexOf('.');
+                if (position >= 0)
+                {
+                    return assetName.Substring(position + 1);
+                }
+            }
+        
+            return DefaultExtension;
+        }
     }
 }

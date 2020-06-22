@@ -430,27 +430,27 @@ namespace Framework.Editor
         
         private void BuildResources()
         {
-            //if (m_Controller.BuildResources())
-            //{
-            //    Debug.Log("Build resources success.");
-            //    SaveConfiguration();
-            //}
-            //else
-            //{
-            //    Debug.LogWarning("Build resources failure.");
-            //}
+            if (m_Controller.BuildResources())
+            {
+                Debug.Log("Build resources success.");
+                SaveConfiguration();
+            }
+            else
+            {
+                Debug.LogWarning("Build resources failure.");
+            }
         }
         
         private void SaveConfiguration()
         {
-            //if (m_Controller.Save())
-            //{
-            //    Debug.Log("Save configuration success.");
-            //}
-            //else
-            //{
-            //    Debug.LogWarning("Save configuration failure.");
-            //}
+            if (m_Controller.Save())
+            {
+                Debug.Log("Save configuration success.");
+            }
+            else
+            {
+                Debug.LogWarning("Save configuration failure.");
+            }
         }
         
         private void DrawPlatform(Platform platform, string platformName)
