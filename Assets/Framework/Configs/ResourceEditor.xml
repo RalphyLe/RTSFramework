@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <UnityGameFramework>
   <ResourceEditor>
     <Settings>
       <SourceAssetRootPath>Assets</SourceAssetRootPath>
       <SourceAssetSearchPaths>
-        <SourceAssetSearchPath RelativePath=""></SourceAssetSearchPath>
+        <SourceAssetSearchPath RelativePath="" />
       </SourceAssetSearchPaths>
       <SourceAssetUnionTypeFilter>t:Scene t:Prefab t:Shader t:Model t:Material t:AudioClip t:AnimationClip t:AnimatorController t:Font t:TextAsset t:ScriptableObject</SourceAssetUnionTypeFilter>
       <SourceAssetUnionLabelFilter>l:ResourceInclusive</SourceAssetUnionLabelFilter>

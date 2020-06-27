@@ -316,7 +316,7 @@ namespace Framework.Editor
                         EditorGUI.EndDisabledGroup();
                         if (GUILayout.Button("Save", GUILayout.Width(80f)))
                         {
-                            //SaveConfiguration();
+                            SaveConfiguration();
                         }
                     }
                 }

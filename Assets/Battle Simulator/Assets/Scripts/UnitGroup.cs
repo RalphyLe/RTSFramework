@@ -1,5 +1,6 @@
-﻿using Boo.Lang;
-using System;
+﻿using System;
+using System.Collections.Generic;
+
 public class UnitGroup
 {
     public List<Unit> units;

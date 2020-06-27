@@ -241,7 +241,7 @@ namespace Framework.Editor
 
         public DependencyData GetDependencyData(string assetName)
         {
-            DependencyData dependencyData = null;
+            DependencyData dependencyData = new DependencyData();
             if (m_DependencyDatas.TryGetValue(assetName, out dependencyData))
             {
                 return dependencyData;

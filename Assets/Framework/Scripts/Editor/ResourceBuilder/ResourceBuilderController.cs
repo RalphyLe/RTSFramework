@@ -57,23 +57,23 @@ namespace Framework.Editor
                 }
             };
             
-            //m_ResourceAnalyzerController = new ResourceAnalyzerController(m_ResourceCollection);
+            m_ResourceAnalyzerController = new ResourceAnalyzerController(m_ResourceCollection);
             
-            //m_ResourceAnalyzerController.OnAnalyzingAsset += delegate (int index, int count)
-            //{
-            //    if (OnAnalyzingAsset != null)
-            //    {
-            //        OnAnalyzingAsset(index, count);
-            //    }
-            //};
+            m_ResourceAnalyzerController.OnAnalyzingAsset += delegate (int index, int count)
+            {
+                if (OnAnalyzingAsset != null)
+                {
+                    OnAnalyzingAsset(index, count);
+                }
+            };
             
-            //m_ResourceAnalyzerController.OnAnalyzeCompleted += delegate ()
-            //{
-            //    if (OnAnalyzeCompleted != null)
-            //    {
-            //        OnAnalyzeCompleted();
-            //    }
-            //};
+            m_ResourceAnalyzerController.OnAnalyzeCompleted += delegate ()
+            {
+                if (OnAnalyzeCompleted != null)
+                {
+                    OnAnalyzeCompleted();
+                }
+            };
             
             m_ResourceDatas = new SortedDictionary<string, ResourceData>();
             //m_BuildReport = new BuildReport();
@@ -675,7 +675,7 @@ namespace Framework.Editor
                 //m_BuildReport.LogInfo("Prepare resource collection complete.");
                 //m_BuildReport.LogInfo("Start analyze assets dependency...");
         
-                //m_ResourceAnalyzerController.Analyze();
+                m_ResourceAnalyzerController.Analyze();
         
                 //m_BuildReport.LogInfo("Analyze assets dependency complete.");
                 //m_BuildReport.LogInfo("Start prepare build map...");
