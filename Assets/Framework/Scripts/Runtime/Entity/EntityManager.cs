@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Framework.Runtime
 {
-    public class EntityManager : ManagerBase, IEntityManager
+    public class EntityManager : ManagerBase
     {
         private readonly Dictionary<int, EntityInfo> m_EntityInfos;
         private readonly Dictionary<string, EntityGroup> m_EntityGroups;
@@ -56,6 +56,16 @@ namespace Framework.Runtime
             }
         }
 
+        public override void Init()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Shutdown()
+        {
+            throw new System.NotImplementedException();
+        }
+
         /// <summary>
         /// 实体管理器轮询。
         /// </summary>
@@ -63,27 +73,27 @@ namespace Framework.Runtime
         /// <param name="realElapseSeconds">真实流逝时间，以秒为单位。</param>
         public override void Update(float elapseSeconds, float realElapseSeconds)
         {
-            while (m_RecycleQueue.Count > 0)
-            {
-                EntityInfo entityInfo = m_RecycleQueue.Dequeue();
-                IEntity entity = entityInfo.Entity;
-                EntityGroup entityGroup = (EntityGroup)entity.EntityGroup;
-                if (entityGroup == null)
-                {
-                    throw new GameFrameworkException("Entity group is invalid.");
-                }
-
-                entityInfo.Status = EntityStatus.WillRecycle;
-                entity.OnRecycle();
-                entityInfo.Status = EntityStatus.Recycled;
-                entityGroup.UnspawnEntity(entity);
-                ReferencePool.Release(entityInfo);
-            }
-
-            foreach (KeyValuePair<string, EntityGroup> entityGroup in m_EntityGroups)
-            {
-                entityGroup.Value.Update(elapseSeconds, realElapseSeconds);
-            }
+            //while (m_RecycleQueue.Count > 0)
+            //{
+            //    EntityInfo entityInfo = m_RecycleQueue.Dequeue();
+            //    IEntity entity = entityInfo.Entity;
+            //    EntityGroup entityGroup = (EntityGroup)entity.EntityGroup;
+            //    if (entityGroup == null)
+            //    {
+            //        throw new GameFrameworkException("Entity group is invalid.");
+            //    }
+            //
+            //    entityInfo.Status = EntityStatus.WillRecycle;
+            //    entity.OnRecycle();
+            //    entityInfo.Status = EntityStatus.Recycled;
+            //    entityGroup.UnspawnEntity(entity);
+            //    ReferencePool.Release(entityInfo);
+            //}
+            //
+            //foreach (KeyValuePair<string, EntityGroup> entityGroup in m_EntityGroups)
+            //{
+            //    entityGroup.Value.Update(elapseSeconds, realElapseSeconds);
+            //}
         }
     }
 }

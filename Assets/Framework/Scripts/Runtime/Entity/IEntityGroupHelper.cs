@@ -3,11 +3,11 @@ using UnityEditor;
 
 namespace Framework.Runtime
 {
+     
     /// <summary>
-    /// 实体组
+    /// 实体组辅助器接口。
     /// </summary>
-    public class EntityGroup : IEntityGroup
+    public interface IEntityGroupHelper
     {
-        
-    } 
+    }
 }
