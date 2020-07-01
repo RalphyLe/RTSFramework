@@ -325,23 +325,74 @@ namespace Framework.Editor
         {
             m_ResourceViewScroll = EditorGUILayout.BeginScrollView(m_ResourceViewScroll);
             {
- 
+                if (m_SelectedResource != null)
+                {
+                    int index = 0;
+                    Asset[] assets = m_Controller.GetAssets(m_SelectedResource.Name, m_SelectedResource.Variant);
+                    m_CurrentResourceContentCount = assets.Length;
+                    foreach (Asset asset in assets)
+                    {
+                        SourceAsset sourceAsset = m_Controller.GetSourceAsset(asset.Guid);
+                        string assetName = sourceAsset != null ? (m_Controller.AssetSorter == AssetSorterType.Path ? sourceAsset.Path : (m_Controller.AssetSorter == AssetSorterType.Name ? sourceAsset.Name : sourceAsset.Guid)) : asset.Guid;
+                        EditorGUILayout.BeginHorizontal();
+                        {
+                            float emptySpace = position.width;
+                            bool select = IsSelectedAssetInSelectedResource(asset);
+                            if (select != EditorGUILayout.Toggle(select, GUILayout.Width(emptySpace - 12f)))
+                            {
+                                select = !select;
+                                SetSelectedAssetInSelectedResource(asset, select);
+                            }
+
+                            GUILayout.Space(-emptySpace + 24f);
+#if UNITY_2019_3_OR_NEWER
+                            GUI.DrawTexture(new Rect(20f, 20f * index++ + 3f, 16f, 16f), sourceAsset != null ? sourceAsset.Icon : m_MissingSourceAssetIcon);
+                            EditorGUILayout.LabelField(string.Empty, GUILayout.Width(16f), GUILayout.Height(18f));
+#else
+                            GUI.DrawTexture(new Rect(20f, 20f * index++ + 1f, 16f, 16f), sourceAsset != null ? sourceAsset.Icon : m_MissingSourceAssetIcon);
+                            EditorGUILayout.LabelField(string.Empty, GUILayout.Width(14f), GUILayout.Height(18f));
+#endif
+                            EditorGUILayout.LabelField(assetName);
+                        }
+                        EditorGUILayout.EndHorizontal();
+                    }
+                }
+                else
+                {
+                    m_CurrentResourceContentCount = 0;
+                }
             }
             EditorGUILayout.EndScrollView();
         }
 
         private void DrawResourceMenu()
         {
-            if (GUILayout.Button("All", GUILayout.Width(50f)))
+            if (GUILayout.Button("All", GUILayout.Width(50f)) && m_SelectedResource != null)
             {
-
+                Asset[] assets = m_Controller.GetAssets(m_SelectedResource.Name, m_SelectedResource.Variant);
+                foreach (Asset asset in assets)
+                {
+                    SetSelectedAssetInSelectedResource(asset, true);
+                }
             }
             if (GUILayout.Button("None", GUILayout.Width(50f)))
             {
+                m_SelectedAssetsInSelectedResource.Clear();
             }
             m_Controller.AssetSorter = (AssetSorterType)EditorGUILayout.EnumPopup(m_Controller.AssetSorter, GUILayout.Width(60f));
             GUILayout.Label(string.Empty);
+            EditorGUI.BeginDisabledGroup(m_SelectedResource == null || m_SelectedAssetsInSelectedResource.Count <= 0);
+            {
+                if (GUILayout.Button(string.Format("{0} >>", m_SelectedAssetsInSelectedResource.Count.ToString()), GUILayout.Width(80f)))
+                {
+                    foreach (Asset asset in m_SelectedAssetsInSelectedResource)
+                    {
+                        UnassignAsset(asset);
+                    }
 
+                    m_SelectedAssetsInSelectedResource.Clear();
+                }
+            }
             EditorGUI.EndDisabledGroup();
         }
 
@@ -841,6 +892,23 @@ namespace Framework.Editor
             }
         }
 
+        private bool IsSelectedAssetInSelectedResource(Asset asset)
+        {
+            return m_SelectedAssetsInSelectedResource.Contains(asset);
+        }
+
+        private void SetSelectedAssetInSelectedResource(Asset asset, bool select)
+        {
+            if (select)
+            {
+                m_SelectedAssetsInSelectedResource.Add(asset);
+            }
+            else
+            {
+                m_SelectedAssetsInSelectedResource.Remove(asset);
+            }
+        }
+
         private void SetResourceLoadType(LoadType loadType)
         {
             string fullName = m_SelectedResource.FullName;
@@ -872,6 +940,14 @@ namespace Framework.Editor
             if (!m_Controller.AssignAsset(sourceAsset.Guid, resource.Name, resource.Variant))
             {
                 Debug.LogWarning(string.Format("Assign asset '{0}' to resource '{1}' failure.", sourceAsset.Name, resource.FullName));
+            }
+        }
+
+        private void UnassignAsset(Asset asset)
+        {
+            if (!m_Controller.UnassignAsset(asset.Guid))
+            {
+                Debug.LogWarning(string.Format("Unassign asset '{0}' from resource '{1}' failure.", asset.Guid, m_SelectedResource.FullName));
             }
         }
 
