@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Framework.Editor
 {
     /// <summary>
-    /// 资源文件夹封装
+    /// 资源编辑器中对unity工程源文件夹的管理类
     /// </summary>
     public class SourceFolder
     {
@@ -16,7 +16,7 @@ namespace Framework.Editor
         /// </summary>
         private readonly List<SourceFolder> m_Folders;
         /// <summary>
-        /// 当前路径下的资源
+        /// 当前路径下的unity工程源文件
         /// </summary>
         private readonly List<SourceAsset> m_Assets;
 
@@ -34,12 +34,18 @@ namespace Framework.Editor
             Folder = folder;
         }
 
+        /// <summary>
+        /// 文件夹名
+        /// </summary>
         public string Name
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// 父文件夹
+        /// </summary>
         public SourceFolder Folder
         {
             get;
@@ -47,7 +53,7 @@ namespace Framework.Editor
         }
 
         /// <summary>
-        /// 相对根目录的路径
+        /// 从根目录开始的相对路径
         /// </summary>
         public string FromRootPath
         {
@@ -68,6 +74,9 @@ namespace Framework.Editor
             }
         }
 
+        /// <summary>
+        /// 文件夹图标
+        /// </summary>
         public static Texture Icon
         {
             get
@@ -81,6 +90,9 @@ namespace Framework.Editor
             }
         }
 
+        /// <summary>
+        /// 清除文件夹数据
+        /// </summary>
         public void Clear()
         {
             m_Folders.Clear();
@@ -147,6 +159,7 @@ namespace Framework.Editor
         {
             return m_Assets.ToArray();
         }
+
         /// <summary>
         /// 查找资源
         /// </summary>
@@ -172,9 +185,9 @@ namespace Framework.Editor
         /// <summary>
         /// 添加资源
         /// </summary>
-        /// <param name="guid"></param>
-        /// <param name="path"></param>
-        /// <param name="name"></param>
+        /// <param name="guid">资源guid</param>
+        /// <param name="path">资源路径，从根目录开始的相对路径</param>
+        /// <param name="name">资源名字</param>
         /// <returns></returns>
         public SourceAsset AddAsset(string guid, string path, string name)
         {

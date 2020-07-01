@@ -3,7 +3,7 @@
 namespace Framework.Editor
 {
     /// <summary>
-    /// 资源集
+    /// 资源包
     /// </summary>
     public class Resource
     {
@@ -28,7 +28,7 @@ namespace Framework.Editor
         }
 
         /// <summary>
-        /// 资源集名字
+        /// 资源包名字
         /// </summary>
         public string Name
         {
@@ -57,7 +57,7 @@ namespace Framework.Editor
         }
 
         /// <summary>
-        /// 资源集类型
+        /// 资源包类型
         /// </summary>
         public AssetType AssetType
         {
@@ -66,7 +66,7 @@ namespace Framework.Editor
         }
 
         /// <summary>
-        /// 检查加载类型
+        /// 检查是否是字节方式加载
         /// </summary>
         public bool IsLoadFromBinary
         {
@@ -86,7 +86,7 @@ namespace Framework.Editor
         }
 
         /// <summary>
-        /// 打包标记
+        /// 打补丁包标签
         /// </summary>
         public bool Packed
         {
@@ -95,7 +95,7 @@ namespace Framework.Editor
         }
 
         /// <summary>
-        /// 创建资源集
+        /// 创建资源包
         /// </summary>
         /// <param name="name"></param>
         /// <param name="variant"></param>
@@ -109,7 +109,7 @@ namespace Framework.Editor
         }
 
         /// <summary>
-        /// 获取资源集中的所有资源
+        /// 获取资源包中的所有资源
         /// </summary>
         /// <returns></returns>
         public Asset[] GetAssets()
@@ -118,7 +118,7 @@ namespace Framework.Editor
         }
 
         /// <summary>
-        /// 获取资源集中的第一个资源
+        /// 获取资源包中的第一个资源
         /// </summary>
         /// <returns></returns>
         public Asset GetFirstAsset()
@@ -227,6 +227,9 @@ namespace Framework.Editor
             return m_ResourceGroups.Remove(resourceGroup);
         }
 
+        /// <summary>
+        /// 清除资源包数据
+        /// </summary>
         public void Clear()
         {
             foreach (Asset asset in m_Assets)

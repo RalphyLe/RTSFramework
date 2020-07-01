@@ -4,12 +4,22 @@ using UnityEngine;
 namespace Framework.Editor
 {
     /// <summary>
-    /// 资源源文件封装
+    /// 资源编辑器中对unity工程源文件的管理类
     /// </summary>
     public class SourceAsset
     {
+        /// <summary>
+        /// 资源图标
+        /// </summary>
         private Texture m_CachedIcon;
 
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="guid">源文件guid</param>
+        /// <param name="path">从根目录开始的相对路径</param>
+        /// <param name="name">源文件名</param>
+        /// <param name="folder">父文件夹</param>
         public SourceAsset(string guid, string path, string name, SourceFolder folder)
         {
             if (folder == null)
