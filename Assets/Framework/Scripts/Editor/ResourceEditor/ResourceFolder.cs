@@ -10,11 +10,14 @@ namespace Framework.Editor
         {
             private static Texture s_CachedIcon = null;
 
+            /// <summary>
+            /// 子文件夹
+            /// </summary>
             private readonly List<ResourceFolder> m_Folders;
             private readonly List<ResourceItem> m_Items;
 
             /// <summary>
-            /// 资源集文件夹构造函数
+            /// 资源包文件夹构造函数
             /// </summary>
             /// <param name="name"></param>
             /// <param name="folder"></param>
@@ -37,7 +40,7 @@ namespace Framework.Editor
             }
 
             /// <summary>
-            /// 文件夹
+            /// 父文件夹
             /// </summary>
             public ResourceFolder Folder
             {
@@ -46,7 +49,7 @@ namespace Framework.Editor
             }
 
             /// <summary>
-            /// 加载根目录
+            /// 获取从根目录开始的相对目录
             /// </summary>
             public string FromRootPath
             {
@@ -57,7 +60,7 @@ namespace Framework.Editor
             }
 
             /// <summary>
-            /// 路径深度
+            /// 相对根目录的深度
             /// </summary>
             public int Depth
             {
@@ -143,7 +146,7 @@ namespace Framework.Editor
             }
 
             /// <summary>
-            /// 获取目录下的所有资源集
+            /// 获取目录下的所有资源包
             /// </summary>
             /// <returns></returns>
             public ResourceItem[] GetItems()
@@ -152,9 +155,9 @@ namespace Framework.Editor
             }
 
             /// <summary>
-            /// 后去资源集
+            /// 后去资源包
             /// </summary>
-            /// <param name="name">资源集名</param>
+            /// <param name="name">资源包名</param>
             /// <returns></returns>
             public ResourceItem GetItem(string name)
             {
@@ -175,7 +178,7 @@ namespace Framework.Editor
             }
 
             /// <summary>
-            /// 添加资源集
+            /// 添加资源包
             /// </summary>
             /// <param name="name"></param>
             /// <param name="resource"></param>
@@ -193,7 +196,7 @@ namespace Framework.Editor
             }
 
             /// <summary>
-            /// 资源集比较函数
+            /// 资源包比较函数
             /// </summary>
             /// <param name="a"></param>
             /// <param name="b"></param>
