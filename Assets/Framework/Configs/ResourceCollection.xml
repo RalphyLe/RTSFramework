@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<UnityGameFramework>
+  <ResourceCollection>
+    <Resources>
+      <Resource Name="Framework/Configs/ResourceBuilder" LoadType="0" Packed="True" />
+      <Resource Name="Framework/Configs/ResourceEditor" LoadType="0" Packed="True" />
+      <Resource Name="Scenes/NewScene" LoadType="0" Packed="True" />
+      <Resource Name="Scenes/SampleScene" LoadType="0" Packed="True" />
+    </Resources>
+    <Assets>
+      <Asset Guid="3bcbca3815e5cf84eb21979577206cfa" ResourceName="Scenes/NewScene" />
+      <Asset Guid="693a4a53c5cc9c24496395bef7e5a5ef" ResourceName="Framework/Configs/ResourceEditor" />
+      <Asset Guid="9fc0d4010bbf28b4594072e72b8655ab" ResourceName="Scenes/SampleScene" />
+      <Asset Guid="cd06c856f1f5d814a8cb6ede10b9da71" ResourceName="Framework/Configs/ResourceBuilder" />
+    </Assets>
+  </ResourceCollection>
+</UnityGameFramework>
