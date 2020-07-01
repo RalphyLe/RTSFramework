@@ -3,10 +3,15 @@
 namespace Framework.Editor
 {
     /// <summary>
-    /// 资源。
+    /// 资源包中的资源
     /// </summary>
     public sealed class Asset
     {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="guid">guid</param>
+        /// <param name="resource">所属资源包</param>
         private Asset(string guid, Resource resource)
         {
             Guid = guid;
@@ -45,7 +50,7 @@ namespace Framework.Editor
         /// <summary>
         /// 创建资源接口
         /// </summary>
-        /// <param name="guid"></param>
+        /// <param name="guid">guid</param>
         /// <returns></returns>
         public static Asset Create(string guid)
         {
@@ -55,8 +60,8 @@ namespace Framework.Editor
         /// <summary>
         /// 创建资源接口
         /// </summary>
-        /// <param name="guid"></param>
-        /// <param name="resource"></param>
+        /// <param name="guid">guid</param>
+        /// <param name="resource">资源包</param>
         /// <returns></returns>
         public static Asset Create(string guid, Resource resource)
         {

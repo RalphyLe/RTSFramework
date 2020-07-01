@@ -164,13 +164,17 @@ namespace Framework.Editor
             get;
             set;
         }
-
+        /// <summary>
+        /// 采用无压缩格式打ab包
+        /// </summary>
         public bool UncompressedAssetBundleSelected
         {
             get;
             set;
         }
-
+        /// <summary>
+        ///
+        /// </summary>
         public bool DisableWriteTypeTreeSelected
         {
             get;
@@ -772,7 +776,7 @@ namespace Framework.Editor
             string platformName = platform.ToString();
             //m_BuildReport.LogInfo("Start build resources for '{0}'...", platformName);
         
-            string workingPath = string.Format("{0}{1}/", WorkingPath, platformName);
+            string workingPath = string.Format("{0}{1}/", WorkingPath, platformName);//ab包导出路径
             //m_BuildReport.LogInfo("Working path is '{0}'.", workingPath);
         
             string outputPackagePath = string.Format("{0}{1}/", OutputPackagePath, platformName);

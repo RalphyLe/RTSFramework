@@ -4,8 +4,8 @@
     <Resources>
       <Resource Name="Framework/Configs/ResourceBuilder" LoadType="0" Packed="True" />
       <Resource Name="Framework/Configs/ResourceEditor" LoadType="0" Packed="True" />
-      <Resource Name="Scenes/NewScene" LoadType="0" Packed="True" />
-      <Resource Name="Scenes/SampleScene" LoadType="0" Packed="True" />
+      <Resource Name="Scenes/NewScene" LoadType="5" Packed="True" />
+      <Resource Name="Scenes/SampleScene" LoadType="5" Packed="True" />
     </Resources>
     <Assets>
       <Asset Guid="3bcbca3815e5cf84eb21979577206cfa" ResourceName="Scenes/NewScene" />
