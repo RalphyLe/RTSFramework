@@ -97,12 +97,12 @@ namespace Framework.Editor
                         EditorGUILayout.LabelField(m_Controller.GameIdentifier);
                     }
                     EditorGUILayout.EndHorizontal();
-                    //EditorGUILayout.BeginHorizontal();
-                    //{
-                    //    EditorGUILayout.LabelField("Game Framework Version", GUILayout.Width(160f));
-                    //    EditorGUILayout.LabelField(m_Controller.GameFrameworkVersion);
-                    //}
-                    //EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        EditorGUILayout.LabelField("Game Framework Version", GUILayout.Width(160f));
+                        EditorGUILayout.LabelField(m_Controller.GameFrameworkVersion);
+                    }
+                    EditorGUILayout.EndHorizontal();
                     EditorGUILayout.BeginHorizontal();
                     {
                         EditorGUILayout.LabelField("Unity Version", GUILayout.Width(160f));
