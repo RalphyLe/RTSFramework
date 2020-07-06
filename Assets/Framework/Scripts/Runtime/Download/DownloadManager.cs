@@ -6,7 +6,7 @@ using System.IO;
 namespace Framework.Runtime
 {
     /**/
-    public class DownloadManager : ManagerBase
+    public partial class DownloadManager : ManagerBase
     { 
         private const int OneMegaBytes = 1024 * 1024;
 
