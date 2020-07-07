@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System;
 
 namespace Framework.Runtime
 {
@@ -10,9 +11,9 @@ namespace Framework.Runtime
     {
         private readonly TaskPool<WebRequestTask> m_TaskPool;
         private float m_Timeout;
-        //private EventHandler<WebRequestStartEventArgs> m_WebRequestStartEventHandler;
-        //private EventHandler<WebRequestSuccessEventArgs> m_WebRequestSuccessEventHandler;
-        //private EventHandler<WebRequestFailureEventArgs> m_WebRequestFailureEventHandler;
+        private EventHandler<WebRequestStartEventArgs> m_WebRequestStartEventHandler;
+        private EventHandler<WebRequestSuccessEventArgs> m_WebRequestSuccessEventHandler;
+        private EventHandler<WebRequestFailureEventArgs> m_WebRequestFailureEventHandler;
 
         /// <summary>
         /// 初始化 Web 请求管理器的新实例。
@@ -85,47 +86,47 @@ namespace Framework.Runtime
         /// <summary>
         /// Web 请求开始事件。
         /// </summary>
-        //public event EventHandler<WebRequestStartEventArgs> WebRequestStart
-        //{
-        //    add
-        //    {
-        //        m_WebRequestStartEventHandler += value;
-        //    }
-        //    remove
-        //    {
-        //        m_WebRequestStartEventHandler -= value;
-        //    }
-        //}
+        public event EventHandler<WebRequestStartEventArgs> WebRequestStart
+        {
+            add
+            {
+                m_WebRequestStartEventHandler += value;
+            }
+            remove
+            {
+                m_WebRequestStartEventHandler -= value;
+            }
+        }
 
         /// <summary>
         /// Web 请求成功事件。
         /// </summary>
-        //public event EventHandler<WebRequestSuccessEventArgs> WebRequestSuccess
-        //{
-        //    add
-        //    {
-        //        m_WebRequestSuccessEventHandler += value;
-        //    }
-        //    remove
-        //    {
-        //        m_WebRequestSuccessEventHandler -= value;
-        //    }
-        //}
+        public event EventHandler<WebRequestSuccessEventArgs> WebRequestSuccess
+        {
+            add
+            {
+                m_WebRequestSuccessEventHandler += value;
+            }
+            remove
+            {
+                m_WebRequestSuccessEventHandler -= value;
+            }
+        }
 
         /// <summary>
         /// Web 请求失败事件。
         /// </summary>
-        //public event EventHandler<WebRequestFailureEventArgs> WebRequestFailure
-        //{
-        //    add
-        //    {
-        //        m_WebRequestFailureEventHandler += value;
-        //    }
-        //    remove
-        //    {
-        //        m_WebRequestFailureEventHandler -= value;
-        //    }
-        //}
+        public event EventHandler<WebRequestFailureEventArgs> WebRequestFailure
+        {
+            add
+            {
+                m_WebRequestFailureEventHandler += value;
+            }
+            remove
+            {
+                m_WebRequestFailureEventHandler -= value;
+            }
+        }
 
         /// <summary>
         /// Web 请求管理器轮询。

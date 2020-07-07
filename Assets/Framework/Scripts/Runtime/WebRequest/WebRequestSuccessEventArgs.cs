@@ -12,7 +12,7 @@ namespace Framework.Runtime
 
         /// <summary>
         /// 初始化 Web 请求成功事件的新实例。
-        /// </summary>
+        /// </summary> 
         public WebRequestSuccessEventArgs()
         {
             SerialId = 0;
